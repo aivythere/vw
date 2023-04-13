@@ -3,14 +3,12 @@ import sqlite3
 import certifi
 from kivy.animation import Animation
 from kivy.clock import Clock
-from kivy.core.window import Window
 from kivy.metrics import sp
 from kivy.network.urlrequest import UrlRequest
 from kivy.uix.image import Image
+from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.dialog import MDDialog
 from kivymd.uix.screen import MDScreen
-from kivymd.uix.screenmanager import MDScreenManager
-from kivymd.app import MDApp
 from kivymd.uix.gridlayout import MDGridLayout
 from kivymd.uix.card import MDCard, MDSeparator
 import animations
@@ -27,14 +25,14 @@ class ProfitCalculatorScreen(MDScreen):
         self.name = 'ProfitCalc'
         grid = MDGridLayout(cols=1, padding=appconf.OVERALL_PADDING, spacing=50)
         self.title = bfont.MSFont(text='Загрузка...', style='Bold', size='25sp', size_hint_y=.3)
-        self.title_lo = elements.Title(screen_manager)
+        self.title_lo = elements.Title(screen_manager, size_hint_y=.5)
         self.title_lo.add_widget(self.title)
 
         self.deposit_amount_card = elements.TextCard(main_text='', sec_text='Сумма вклада')
         self.min_dep_amount_label = bfont.MSFont('от 100 ₽ до 50 000 000 ₽', size='15sp',
                                                  size_hint_y=0.1, halign='center', valign='center')
         self.deposit_amount_input = elements.BetterMoneyTextInput(
-            on_text_change=self.onTextFieldTextChange,
+            on_text_change=self.onTextFieldTextChange, size_hint_y=.7
         )
         self.deposit_amount_input.disabled = True
         # separator
@@ -47,6 +45,7 @@ class ProfitCalculatorScreen(MDScreen):
         grid.add_widget(MDSeparator(size_hint_y=.2))
         self.ProfitCard_instance = self.ProfitCard()
         grid.add_widget(self.ProfitCard_instance)
+        grid.add_widget(MDBoxLayout())
 
         self.add_widget(grid)
 
@@ -165,7 +164,7 @@ class ProfitCalculatorScreen(MDScreen):
     class ProfitCard(MDCard):
         def __init__(self):
             super().__init__()
-            self.padding = 30
+            self.padding = 50
             self.md_bg_color = palette.blued_gray_main_rgba
             master_grid = MDGridLayout(rows=3, cols=1)
             self.size_hint_y = 2.5

@@ -25,7 +25,7 @@ class CodeInputScreen(MDScreen):
         self.name = "CodeInput"
         self.screen_manager = screen_manager
         grid = MDGridLayout(cols=1, padding=appconf.OVERALL_PADDING, spacing=50)
-        self.title = bfont.MSFont(text='Вход в профиль', style="Bold", halign='left', size_hint_y=.1)
+        self.title = bfont.MSFont(text='Вход в профиль', style="Bold", halign='center', size_hint_y=.1)
         self.email_label = bfont.MSFont(text='', halign='center', size='20sp', size_hint_y=.2)
         # separator
         self.code_input = elements.BetterTextInput(pic_filename='message.png',
@@ -33,12 +33,13 @@ class CodeInputScreen(MDScreen):
                                                    font_size=25)
         self.SubmitCode_instance = self.SubmitCode(self.submitCode)
 
+        grid.add_widget(MDBoxLayout(size_hint_y=.5))
         grid.add_widget(self.title)
         grid.add_widget(self.email_label)
         grid.add_widget(MDSeparator())
         grid.add_widget(self.code_input)
         grid.add_widget(self.SubmitCode_instance)
-        grid.add_widget(MDBoxLayout(size_hint_y=.7))
+        grid.add_widget(MDBoxLayout(size_hint_y=.5))
 
         self.add_widget(grid)
 

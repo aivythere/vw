@@ -21,28 +21,29 @@ class PacksScreen(MDScreen):
         self.name = "Packs"
         self.scr = screen_manager
         self.grid = MDGridLayout(cols=1, spacing=30, padding=appconf.OVERALL_PADDING)
-        self.title = bfont.MSFont(text='Тарифы и планы', style='Bold', size='25sp', size_hint_y=.5)
+        self.title = bfont.MSFont(text='Тарифы и планы', style='Bold', size='25sp')
         self.CalcButton = elements.IconCard(image_path='images/profit_calculator.png',
                                             text='Расчитать доход',
                                             func=lambda *a: elements.change_screen(self.scr, "ProfitCalc"),
                                             color=palette.accent_yellow_rgba, size_hint_y=.5)
 
-        self.title_lo = elements.Title(screen_manager, "MainMenu")
+        self.title_lo = elements.Title(screen_manager, "MainMenu", size_hint_y=.5)
         self.title_lo.add_widget(self.title)
-
 
         self.grid.add_widget(self.title_lo)
         self.add_widget(self.grid)
 
-        Clock.schedule_once(lambda *a: UrlRequest(url=appconf.SERVER_DOMAIN,
+        self.IS_INIT = False
+
+    def on_pre_enter(self, *args):
+        Clock.schedule_once(self.start_animate_all, 0)
+        if not self.IS_INIT:
+            Clock.schedule_once(lambda *a: UrlRequest(url=appconf.SERVER_DOMAIN,
                                                   req_body=json.dumps({'method': 'DEPS_lookup'}),
                                                   on_success=self.success_ps,
                                                   on_error=self.error_ps,
                                                   timeout=appconf.REQUEST_TIMEOUT,
                                                   ca_file=certifi.where()), 0)
-
-    def on_pre_enter(self, *args):
-        Clock.schedule_once(self.start_animate_all, 0)
 
     def on_leave(self, *args):
         Clock.schedule_once(self.stop_animate_all, 0)
@@ -52,7 +53,7 @@ class PacksScreen(MDScreen):
         elements.change_screen(self.scr, "DepositScreen")
 
     def create_dep_card(self, rdata: dict, *args):
-        # print('CardCreation')
+        print('CardCreation')
         for i in rdata.keys():
             self.grid.add_widget(item := self.PackItem(onreleasefunc=self.pack_choose_handler, data=i))
             item.pack_title.text = f"Вклад {rdata[i]['pack_meaning']}"
@@ -61,6 +62,7 @@ class PacksScreen(MDScreen):
             item.profitcard_title.ac_label.text = f"{rdata[i]['percent']}%"
             item.pack_description.text = f"Дней до выплаты: {i}"
         self.grid.add_widget(self.CalcButton)
+        self.IS_INIT = True
 
 
     def success_ps(self, *args):
@@ -84,7 +86,7 @@ class PacksScreen(MDScreen):
             self.radius = appconf.CARD_RADIUS
             self.md_bg_color = palette.blued_gray_main_rgba
 
-            main_grid = MDGridLayout(cols=2, padding=[30])
+            main_grid = MDGridLayout(cols=2, padding=50)
             elem_grid = MDGridLayout(cols=1, rows=3, spacing=10)
 
             title_grid = MDGridLayout(cols=2)

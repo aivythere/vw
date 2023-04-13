@@ -49,13 +49,13 @@ class LoginScreen(MDScreen):
             on_release = self.register_attemp
         )
         #separator
-
-        grid.add_widget(MDGridLayout(cols=1, size_hint_y=.2))
+        grid.add_widget(MDBoxLayout(size_hint_y=.5))
         grid.add_widget(self.title)
         grid.add_widget(self.EmailInput_instance)
         grid.add_widget(self.continue_button)
         grid.add_widget(MDSeparator())
         grid.add_widget(self.LowerButtons())
+        grid.add_widget(MDBoxLayout(size_hint_y=.5))
         self.add_widget(grid)
 
         self.REQUEST_ERR_COUNT = 0

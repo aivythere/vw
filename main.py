@@ -1,7 +1,6 @@
-from kivy.clock import Clock
-from kivy.uix.screenmanager import NoTransition, FadeTransition
 from kivymd.app import MDApp
 from kivymd.uix.screenmanager import MDScreenManager
+from kivy.core.window import Window
 import appconf
 import login_screen
 import otpcode_screen
@@ -34,7 +33,6 @@ import packs_screen
 class PassiveIncomeApp(MDApp):
 
     def build(self):
-        # TODO Entrypoint
         self.ScreenManager = MDScreenManager()
 
         self.theme_cls.theme_style = appconf.APP_THEME
@@ -61,6 +59,8 @@ class PassiveIncomeApp(MDApp):
         cache_manager.Cache.append('Genesis', 'func_depscreen', self.DepositScreen.reload)
 
         self.ScreenManager.current = "EntryPoint"
+
+        Window.size = appconf.APP_SIZE
 
         return self.ScreenManager
 

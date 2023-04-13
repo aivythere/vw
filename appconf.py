@@ -1,4 +1,3 @@
-from kivy.uix.screenmanager import NoTransition, SlideTransition
 from kivymd.uix.transition import MDSlideTransition
 
 import palette
@@ -8,8 +7,9 @@ APP_PRIMARY_PALLETE = "Blue"
 APP_TITLE = "Genesis Invest"
 PRIMARY_TEXT_COLOR = palette.white_rgba if APP_THEME == "Dark" else palette.black_rgba
 CARD_RADIUS = 40
-OVERALL_PADDING = [50, 10, 50, 20]
+OVERALL_PADDING = [50, 10, 50, 50]
 DEFAULT_TRANSITION = MDSlideTransition(duration=.2)
+APP_SIZE = 360, 1080
 
 
 # USER_SIDE
