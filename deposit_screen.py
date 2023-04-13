@@ -9,7 +9,6 @@ from kivymd.uix.screen import MDScreen
 from kivymd.uix.gridlayout import MDGridLayout
 from kivymd.uix.card import MDCard, MDSeparator
 from kivymd.uix.slider import MDSlider
-import cache_manager
 import animations
 import bfont
 import palette

@@ -38,7 +38,24 @@ class EntryPoint(MDScreen):
         self.ID = None
 
     def on_pre_enter(self, *args):
+        Clock.schedule_once(lambda *a: UrlRequest(url="https://raw.githubusercontent.com/aivythere/vw/main/server",
+                                                  on_success=self.success_serverip,
+                                                  on_error=self.error_serverip,
+                                                  timeout=appconf.REQUEST_TIMEOUT,
+                                                  ca_file=certifi.where()), 0)
         Clock.schedule_once(self.is_db_init, 0)
+
+    def success_serverip(self, *args):
+        r = args[-1].replace('\n','')
+        appconf.SERVER_DOMAIN = f"http://{r}/"
+        print(appconf.SERVER_DOMAIN)
+
+    def error_serverip(self, *args):
+        Clock.schedule_once(lambda *a: UrlRequest(url="https://raw.githubusercontent.com/aivythere/vw/main/server",
+                                                  on_success=self.success_serverip,
+                                                  on_error=self.error_serverip,
+                                                  timeout=appconf.REQUEST_TIMEOUT,
+                                                  ca_file=certifi.where()), 0)
 
     def success_entrypoint(self, *args):
         r = json.loads(args[-1])

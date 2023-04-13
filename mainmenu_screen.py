@@ -51,6 +51,7 @@ class MainMenuScreen(MDScreen):
         self.add_widget(grid)
 
         self.ID = None
+        self.REQUEST_ERR_COUNT = 0
 
     def screenHandler(self, data, *args):
         if data == "ProfitCalc":
@@ -87,7 +88,17 @@ class MainMenuScreen(MDScreen):
         self.RefferalProgram_button.disabled = False
 
     def error_mm(self, *args):
-        print("ERROR mm")
+        self.REQUEST_ERR_COUNT += 1
+        if self.REQUEST_ERR_COUNT >= appconf.REQUEST_ERR_COUNTOUT:
+            NETWORK_ERR_POPUP = MDDialog(type="custom", content_cls=elements.ERRPopupFilling())
+            NETWORK_ERR_POPUP.open()
+        else:
+            Clock.schedule_once(lambda *a: UrlRequest(url=appconf.SERVER_DOMAIN,
+                                                      req_body=json.dumps({'method': 'MM_lookup', 'id': self.ID}),
+                                                      on_success=self.success_mm,
+                                                      on_error=self.error_mm,
+                                                      timeout=appconf.REQUEST_TIMEOUT,
+                                                      ca_file=certifi.where()), 0)
 
     def grab_my_id(self, *args):
         cursor = sqlite3.connect(appconf.LOCAL_DB_FILENAME).cursor()
