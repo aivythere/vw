@@ -36,10 +36,10 @@ class EntryPoint(MDScreen):
         grid = MDGridLayout(cols=1)
         self.ENTRY_LOAD = MDCard(md_bg_color=palette.blued_gray_main_rgba)
         grid.add_widget(self.ENTRY_LOAD)
-        # self.entry_anim = animations.load_animation().start(y)
         self.ID = None
 
-    def on_pre_enter(self, *args):
+    def on_enter(self, *args):
+        print("ON ENTER")
         Clock.schedule_once(lambda *a: UrlRequest(url="https://raw.githubusercontent.com/aivythere/vw/main/server",
                                                   on_success=self.success_serverip,
                                                   on_error=self.error_serverip,
@@ -55,6 +55,7 @@ class EntryPoint(MDScreen):
         r = args[-1].replace('\n', '')
         if platform != "macosx":
             appconf.SERVER_DOMAIN = f"http://{r}/"
+        print("IP UPDATED")
 
     def error_serverip(self, *args):
         Clock.schedule_once(lambda *a: UrlRequest(url="https://raw.githubusercontent.com/aivythere/vw/main/server",
