@@ -21,7 +21,7 @@ class PacksScreen(MDScreen):
         self.name = "Packs"
         self.scr = screen_manager
         self.grid = MDGridLayout(cols=1, spacing=30, padding=appconf.OVERALL_PADDING)
-        self.title = bfont.MSFont(text='Тарифы и планы', style='bold', size='25sp', size_hint_y=.5)
+        self.title = bfont.MSFont(text='Тарифы и планы', style='Bold', size='25sp', size_hint_y=.5)
         self.CalcButton = elements.IconCard(image_path='images/profit_calculator.png',
                                             text='Расчитать доход',
                                             func=lambda *a: elements.change_screen(self.scr, "ProfitCalc"),

@@ -69,7 +69,7 @@ class BetterMoneyTextInput(MDCard):
         grid.add_widget(input_text_card)
         grid.add_widget(
             dd := MDLabel(
-                text="₽", font_name='fonts/MS_XBold', bold=True, halign='center', valign='center',
+                text="₽", font_name='fonts/MS_XBold', halign='center', valign='center',
                 size_hint_x=.1, text_color=(0, 0, 0, 1), theme_text_color="Custom"
             )
         )
