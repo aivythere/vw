@@ -53,9 +53,10 @@ class EntryPoint(MDScreen):
 
     def success_serverip(self, *args):
         r = args[-1].replace('\n', '')
+        print(f"{r} IP GOT")
         if platform != "macosx":
             appconf.SERVER_DOMAIN = f"http://{r}/"
-        print("IP UPDATED")
+            print("IP UPDATED (osx)")
 
     def error_serverip(self, *args):
         Clock.schedule_once(lambda *a: UrlRequest(url="https://raw.githubusercontent.com/aivythere/vw/main/server",
