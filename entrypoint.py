@@ -39,13 +39,12 @@ class EntryPoint(MDScreen):
         self.ID = None
 
     def on_enter(self, *args):
-        print("ON ENTER")
         Clock.schedule_once(lambda *a: UrlRequest(url="https://raw.githubusercontent.com/aivythere/vw/main/server",
                                                   on_success=self.success_serverip,
                                                   on_error=self.error_serverip,
                                                   timeout=appconf.REQUEST_TIMEOUT,
                                                   ca_file=certifi.where()), 0)
-        Clock.schedule_once(self.is_db_init, 0)
+        Clock.schedule_once(self.is_db_init, 1)
         animations.load_animation().start(self.ENTRY_LOAD)
 
     def on_leave(self, *args):
@@ -56,7 +55,8 @@ class EntryPoint(MDScreen):
         print(f"{r} IP GOT")
         if platform != "macosx":
             appconf.SERVER_DOMAIN = f"http://{r}/"
-            print("IP UPDATED (osx)")
+            # print()
+            print(f"IP UPDATED (osx) {appconf.SERVER_DOMAIN}")
 
     def error_serverip(self, *args):
         Clock.schedule_once(lambda *a: UrlRequest(url="https://raw.githubusercontent.com/aivythere/vw/main/server",
