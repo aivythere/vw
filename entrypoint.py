@@ -75,7 +75,8 @@ class EntryPoint(MDScreen):
         # TODO Удаление экранов, если например уже залогинен
 
     def error_entrypoint(self, *args):
-        print('error ENTRYPOINT', args)
+        print(f'error ENTRYPOINT | self.id: {self.id}', args)
+
 
     def is_db_init(self, *args):
         con = sqlite3.connect(appconf.LOCAL_DB_FILENAME)
@@ -91,7 +92,7 @@ class EntryPoint(MDScreen):
                                                           on_error=self.error_entrypoint,
                                                           timeout=appconf.REQUEST_TIMEOUT,
                                                           ca_file=certifi.where()), 0)
-                print("entry requested")
+                print(f"entry requested | ID: {self.ID} | PLATFORM: {platform} | IP: {appconf.SERVER_DOMAIN}")
             else: elements.change_screen(self.scr, "Login")
         except sqlite3.OperationalError:
             cursor.execute(appconf.DB_CREATION_QUERY)
