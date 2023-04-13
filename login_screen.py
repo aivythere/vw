@@ -27,7 +27,7 @@ class LoginScreen(MDScreen):
         self.name = "Login"
         self.screen_manager = screen_manager
         self.otp_screen_reload = otp_screen_reload
-        grid = MDGridLayout(cols=1, spacing=50, padding=[50, 300, 50, 300])
+        grid = MDGridLayout(cols=1, spacing=50, padding=appconf.OVERALL_PADDING)
 
         self.title = bfont.MSFont(text='[size=30sp][color=000000]Зарегистрироваться[/color][/size]'
                                        '[size=15sp][color=868686]\nили войти[/size][/color]',
@@ -35,7 +35,8 @@ class LoginScreen(MDScreen):
         self.EmailInput_instance = elements.BetterTextInput(on_text_change=lambda *a: ...,
                                                              pic_filename='emailinputat.png',
                                                              font_size=20,
-                                                             placeholder='E-mail')
+                                                             placeholder='E-mail',
+                                                            radius=appconf.CARD_RADIUS)
         self.continue_button = MDCard(
             bfont.MSFont(text="Продолжить", style="Bold", halign='center'),
             padding=[40, 20, 40, 20],
@@ -49,11 +50,13 @@ class LoginScreen(MDScreen):
             on_release = self.register_attemp
         )
         #separator
+        grid.add_widget(MDBoxLayout())
         grid.add_widget(self.title)
         grid.add_widget(self.EmailInput_instance)
         grid.add_widget(self.continue_button)
         grid.add_widget(MDSeparator())
         grid.add_widget(self.LowerButtons())
+        grid.add_widget(MDBoxLayout())
         self.add_widget(grid)
 
         self.REQUEST_ERR_COUNT = 0
@@ -112,7 +115,7 @@ class LoginScreen(MDScreen):
                 padding=[40, 20, 40, 20],
                 size_hint = [.7, .1],
                 md_bg_color=palette.blued_gray_main_rgba,
-                radius=40,
+                radius=appconf.CARD_RADIUS,
                 ripple_behavior=True,
                 pos_hint={'center_x': .5, 'center_y': .6},
                 ripple_alpha=.2
@@ -126,7 +129,7 @@ class LoginScreen(MDScreen):
                 padding=[40, 20, 40, 20],
                 size_hint=[.5, .1],
                 md_bg_color=palette.blued_gray_main_rgba,
-                radius=40,
+                radius=appconf.CARD_RADIUS,
                 ripple_behavior=True,
                 pos_hint={'center_x': .5, 'center_y': .4},
                 ripple_alpha=.2

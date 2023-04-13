@@ -24,7 +24,7 @@ class CodeInputScreen(MDScreen):
         super(CodeInputScreen, self).__init__()
         self.name = "CodeInput"
         self.screen_manager = screen_manager
-        grid = MDGridLayout(cols=1, padding=[50, 200, 50, 300], spacing=50)
+        grid = MDGridLayout(cols=1, padding=appconf.OVERALL_PADDING, spacing=50)
         self.title = bfont.MSFont(text='Вход в профиль', style="Bold", halign='center', size_hint_y=.1)
         self.email_label = bfont.MSFont(text='', halign='center', size='20sp', size_hint_y=.2)
         # separator

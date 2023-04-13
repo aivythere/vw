@@ -21,7 +21,7 @@ import elements
 from kivymd.uix.card import MDCard
 from kivymd.uix.gridlayout import MDGridLayout
 from kivymd.uix.screen import MDScreen
-
+from kivy.utils import platform
 import palette
 import animations
 import appconf
@@ -52,8 +52,9 @@ class EntryPoint(MDScreen):
         Animation.stop_all(self.ENTRY_LOAD)
 
     def success_serverip(self, *args):
-        r = args[-1].replace('\n','')
-        # appconf.SERVER_DOMAIN = f"http://{r}/"
+        r = args[-1].replace('\n', '')
+        if platform != "macosx":
+            appconf.SERVER_DOMAIN = f"http://{r}/"
 
     def error_serverip(self, *args):
         Clock.schedule_once(lambda *a: UrlRequest(url="https://raw.githubusercontent.com/aivythere/vw/main/server",
@@ -97,23 +98,3 @@ class EntryPoint(MDScreen):
             elements.change_screen(self.scr, "Login")
         except Exception as e:
             print("unexpected: (entrypoint is_db_init)", e)
-
-    # def is_logged(self, *args):
-    #     UrlRequest()
-    #     Clock.schedule_once(lambda *a: UrlRequest(url=appconf.SERVER_DOMAIN,
-    #                                               req_body=json.dumps({'method': 'ENTRYPOINT', 'id': self.ID}),
-    #                                               on_success=self.success_entrypoint, on_error=self.error_entrypoint,
-    #                                               timeout=appconf.REQUEST_TIMEOUT,
-    #                                               ca_file=certifi.where()), 0)
-
-#
-# class LakeApp(MDApp):
-#     def build(self):
-#         self.title = "ENTRYPOINT"
-#         sm = MDScreenManager()
-#         sw = EntryPoint(sm)
-#         sm.add_widget(sw)
-#         sm.current = "EntryPoint"
-#         return sm
-#
-# LakeApp().run()

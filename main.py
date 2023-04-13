@@ -10,7 +10,7 @@ import entrypoint
 import deposit_screen
 import cache_manager
 import packs_screen
-
+from kivy.utils import platform
 
 # class KindaScreenManager(MDScreenManager):
 #     def __init__(self):
@@ -59,8 +59,8 @@ class PassiveIncomeApp(MDApp):
         cache_manager.Cache.append('Genesis', 'func_depscreen', self.DepositScreen.reload)
 
         self.ScreenManager.current = "EntryPoint"
-
-        Window.size = appconf.APP_SIZE
+        if platform == "macosx":
+            Window.size = appconf.APP_SIZE
 
         return self.ScreenManager
 
