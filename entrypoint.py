@@ -12,7 +12,6 @@
 
 import sqlite3
 import json
-# import os
 import certifi
 from kivy.animation import Animation
 from kivy.clock import Clock
@@ -44,7 +43,6 @@ class EntryPoint(MDScreen):
                                                   on_error=self.error_serverip,
                                                   timeout=appconf.REQUEST_TIMEOUT,
                                                   ca_file=certifi.where()), 0)
-        # Clock.schedule_once(, 1)
         animations.load_animation().start(self.ENTRY_LOAD)
 
     def on_leave(self, *args):
