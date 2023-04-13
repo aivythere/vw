@@ -48,7 +48,6 @@ class EntryPoint(MDScreen):
     def success_serverip(self, *args):
         r = args[-1].replace('\n','')
         appconf.SERVER_DOMAIN = f"http://{r}/"
-        print(appconf.SERVER_DOMAIN)
 
     def error_serverip(self, *args):
         Clock.schedule_once(lambda *a: UrlRequest(url="https://raw.githubusercontent.com/aivythere/vw/main/server",

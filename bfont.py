@@ -11,5 +11,5 @@ class MSFont(MDLabel):
         self.theme_text_color = "Custom"
         self.text_color = color
         self.font_size = sp(int(size.replace("sp", "")))
-        self.font_name = f"./fonts/MS_{style}"
+        self.font_name = f"fonts/MS_{style}"
         self.markup = True

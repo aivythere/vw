@@ -84,10 +84,10 @@ class ERRPopupFilling(MDBoxLayout):
         self.height = dp(150)
         self.md_bg_color = (0, 0, 0, 0)
         self.ErrorCard_instance = self.ErrorCard()
-        err_image = Image(source="./images/error.png", allow_stretch=True,
+        err_image = Image(source="images/error.png", allow_stretch=True,
                           size_hint=[.5, .5])
         err_caption = bfont.MSFont(
-            text=f'[size=25sp][font=./fonts/MS_Bold]Ошибка сети.[/font][/size]'
+            text=f'[size=25sp][font=fonts/MS_Bold]Ошибка сети.[/font][/size]'
                  f'[size=20sp]\nПроверьте подключение к сети, либо узнайте статус серверов на {appconf.DOMAIN}',
             halign='center', valign='center')
         self.ErrorCard_instance.inner_grid.add_widget(err_image)
