@@ -23,7 +23,7 @@ class ProfitCalculatorScreen(MDScreen):
     def __init__(self, screen_manager):
         super(ProfitCalculatorScreen, self).__init__()
         self.name = 'ProfitCalc'
-        grid = MDGridLayout(cols=1, padding=appconf.OVERALL_PADDING, spacing=50)
+        grid = MDGridLayout(cols=1, padding=[50, 50, 50, 300], spacing=50)
         self.title = bfont.MSFont(text='Загрузка...', style='Bold', size='25sp', size_hint_y=.3)
         self.title_lo = elements.Title(screen_manager, size_hint_y=.5)
         self.title_lo.add_widget(self.title)
@@ -45,7 +45,6 @@ class ProfitCalculatorScreen(MDScreen):
         grid.add_widget(MDSeparator(size_hint_y=.2))
         self.ProfitCard_instance = self.ProfitCard()
         grid.add_widget(self.ProfitCard_instance)
-        grid.add_widget(MDBoxLayout())
 
         self.add_widget(grid)
 
@@ -168,7 +167,7 @@ class ProfitCalculatorScreen(MDScreen):
             self.md_bg_color = palette.blued_gray_main_rgba
             master_grid = MDGridLayout(rows=3, cols=1)
             self.size_hint_y = 2.5
-            self.radius = 40
+            self.radius = appconf.CARD_RADIUS
 
             profit_text_grid = MDGridLayout(cols=2, rows=1)
             self.profit_label = bfont.MSFont(text='[size=20sp]...[/size]'

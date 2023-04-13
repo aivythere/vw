@@ -25,7 +25,7 @@ class MainMenuScreen(MDScreen):
         self.name = 'MainMenu'
         self.screen_manager = screen_manager
         # self.depscreen_instance = dep_sc_in
-        grid = MDGridLayout(cols=1, spacing=40, padding=appconf.OVERALL_PADDING)
+        grid = MDGridLayout(cols=1, spacing=40, padding=[50, 50, 50, 200])
 
         self.title = bfont.MSFont(text='Главное меню', style='Bold', size='35sp', size_hint_y=.5)
         self.ProfileCard_instance = self.ProfileCard()
@@ -46,7 +46,6 @@ class MainMenuScreen(MDScreen):
         grid.add_widget(self.MyDeposits_button)
         grid.add_widget(self.ProfitCalc_button)
         grid.add_widget(self.RefferalProgram_button)
-        grid.add_widget(MDBoxLayout(size_hint_y=.1))
 
         self.add_widget(grid)
 
@@ -132,7 +131,7 @@ class MainMenuScreen(MDScreen):
             self.md_bg_color = palette.blued_gray_main_rgba
             self.radius = appconf.CARD_RADIUS
             # self.size_hint_y = 1.5
-            main_grid = MDGridLayout(cols=2, padding=[40, 30, 30, 30])
+            main_grid = MDGridLayout(cols=2, padding=50)
             text_grid = MDGridLayout(cols=1, rows=4)
 
             self.email_label = bfont.MSFont(text='', size='15sp', style='Bold', size_hint_y=.1)

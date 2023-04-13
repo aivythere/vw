@@ -22,7 +22,7 @@ def change_screen(screen_manager, to_sc, ts_dir='left'):
 class TextCard(MDCard):
     def __init__(self, main_text: str, radius=appconf.CARD_RADIUS, sec_text=None):
         super().__init__()
-        grid = MDGridLayout(cols=1, padding=30, spacing=10)
+        grid = MDGridLayout(cols=1, padding=50, spacing=10)
         self.md_bg_color = palette.blued_gray_main_rgba
         self.radius = radius
         self.main_text = bfont.MSFont(text=main_text, style="Bold", size="25sp")
