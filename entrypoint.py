@@ -40,23 +40,40 @@ class EntryPoint(MDScreen):
 
     def on_enter(self, *args):
         Clock.schedule_once(lambda *a: UrlRequest(url="https://raw.githubusercontent.com/aivythere/vw/main/server",
-                                                  on_success=self.success_serverip,
+                                                  on_success=self.is_db_init,
                                                   on_error=self.error_serverip,
                                                   timeout=appconf.REQUEST_TIMEOUT,
                                                   ca_file=certifi.where()), 0)
-        Clock.schedule_once(self.is_db_init, 1)
+        # Clock.schedule_once(, 1)
         animations.load_animation().start(self.ENTRY_LOAD)
 
     def on_leave(self, *args):
         Animation.stop_all(self.ENTRY_LOAD)
 
-    def success_serverip(self, *args):
+    def is_db_init(self, *args):
         r = args[-1].replace('\n', '')
-        print(f"{r} IP GOT")
         if platform != "macosx":
             appconf.SERVER_DOMAIN = f"http://{r}/"
-            # print()
             print(f"IP UPDATED (osx) {appconf.SERVER_DOMAIN}")
+        con = sqlite3.connect(appconf.LOCAL_DB_FILENAME)
+        cursor = con.cursor()
+        try:
+            dbresp = cursor.execute("SELECT my_id FROM data").fetchone()
+            if dbresp:
+                self.ID = dbresp[0]
+                Clock.schedule_once(lambda *a: UrlRequest(url=appconf.SERVER_DOMAIN,
+                                                          req_body=json.dumps({'method': 'ENTRYPOINT', 'id': self.ID}),
+                                                          on_success=self.success_entrypoint,
+                                                          on_error=self.error_entrypoint,
+                                                          timeout=appconf.REQUEST_TIMEOUT,
+                                                          ca_file=certifi.where()), 0)
+                print(f"entry requested | ID: {self.ID} | PLATFORM: {platform} | IP: {appconf.SERVER_DOMAIN}")
+            else: elements.change_screen(self.scr, "Login")
+        except sqlite3.OperationalError:
+            cursor.execute(appconf.DB_CREATION_QUERY)
+            elements.change_screen(self.scr, "Login")
+        except Exception as e:
+            print("unexpected: (entrypoint is_db_init)", e)
 
     def error_serverip(self, *args):
         Clock.schedule_once(lambda *a: UrlRequest(url="https://raw.githubusercontent.com/aivythere/vw/main/server",
@@ -75,29 +92,9 @@ class EntryPoint(MDScreen):
             return
         elements.change_screen(self.scr, "Login")
         # TODO Удаление экранов, если например уже залогинен
+        #      self.scr.get_screen("Login", "EntryPoint", "CodeInput") delete
 
     def error_entrypoint(self, *args):
         print(f'error ENTRYPOINT | self.id: {self.id}', args)
 
 
-    def is_db_init(self, *args):
-        con = sqlite3.connect(appconf.LOCAL_DB_FILENAME)
-        cursor = con.cursor()
-        try:
-            dbresp = cursor.execute("SELECT my_id FROM data").fetchone()
-            print("dbfile found")
-            if dbresp:
-                self.ID = dbresp[0]
-                Clock.schedule_once(lambda *a: UrlRequest(url=appconf.SERVER_DOMAIN,
-                                                          req_body=json.dumps({'method': 'ENTRYPOINT', 'id': self.ID}),
-                                                          on_success=self.success_entrypoint,
-                                                          on_error=self.error_entrypoint,
-                                                          timeout=appconf.REQUEST_TIMEOUT,
-                                                          ca_file=certifi.where()), 0)
-                print(f"entry requested | ID: {self.ID} | PLATFORM: {platform} | IP: {appconf.SERVER_DOMAIN}")
-            else: elements.change_screen(self.scr, "Login")
-        except sqlite3.OperationalError:
-            cursor.execute(appconf.DB_CREATION_QUERY)
-            elements.change_screen(self.scr, "Login")
-        except Exception as e:
-            print("unexpected: (entrypoint is_db_init)", e)
