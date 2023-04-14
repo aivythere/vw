@@ -29,7 +29,7 @@ class DepositScreen(MDScreen):
 
         self.BALANCE_card = elements.TextCard(main_text='', sec_text='Доступные средства')
         # separator
-        self.deposit_amount_card = elements.TextCard(main_text=dt.MoneyData(100).AM_TEXT)
+        self.deposit_amount_card = elements.TextCard(main_text=dt.MoneyData(100).AM_TEXT, sec_text='Сумма вклада')
         self.slider = MDSlider(
                 thumb_color_active = palette.accent_yellow_rgba,
                 color = palette.blued_gray_main_rgba,
@@ -43,7 +43,7 @@ class DepositScreen(MDScreen):
                 disabled = True
             )
         self.slider.bind(value=self.onSlider)
-        self.sum_textfield = elements.BetterMoneyTextInput(on_text_change=self.onTextFieldTextChange)
+        self.sum_textfield = elements.BetterMoneyTextInput(on_text_change=self.onTextFieldTextChange, size_hint_y=.7)
         self.sum_textfield.disabled = True
         self.ProfitCard_instance = self.ProfitCard()
         self.OpenDepositButton_instance = self.OpenDepositButton(lambda *a: print('opendep func line 50'))

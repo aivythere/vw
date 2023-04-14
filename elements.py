@@ -58,7 +58,8 @@ class BetterMoneyTextInput(MDCard):
             pos_hint={'center_y': .5, 'center_x': .45},
             size_hint_x=.7,
             cursor_color=(1, 1, 1, 1),
-            input_filter='int'
+            input_filter='int',
+            input_type='number'
         )
         opg.add_widget(self.text_field)
         input_text_card.add_widget(opg)
