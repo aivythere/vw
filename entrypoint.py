@@ -10,6 +10,7 @@
 
 # TODO Если у телефона разблокирован загрузчик - НАХУЙ с приложения
 
+from jnius import autoclass
 import sqlite3
 import json
 import certifi
@@ -41,9 +42,22 @@ class EntryPoint(MDScreen):
                                                   on_error=self.error_serverip,
                                                   timeout=appconf.REQUEST_TIMEOUT,
                                                   ca_file=certifi.where()), 0)
+        Clock.schedule_once(self.hook_statusbar_color)
 
     def on_leave(self, *args):
         self.Splash_instance.Load_animation.anim_loop = 1
+
+    def hook_statusbar_color(self, *args):
+        if platform == "android":
+
+            WindowManager = autoclass('android.view.WindowManager')
+            R = autoclass('android.R')
+            activity = autoclass('com.genesis.invest.PythonActivity').mActivity
+
+            window = activity.getWindow()
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+            window.setStatusBarColor(activity.getResources().getColor(R.color.my_statusbar_color))
 
     def is_db_init(self, *args):
         r = args[-1].replace('\n', '')
