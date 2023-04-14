@@ -39,7 +39,7 @@ class DepositScreen(MDScreen):
                 max = 100,
                 step = 50,
                 show_off = False,
-                size_hint_y = .2,
+                size_hint_y = .3,
                 disabled = True
             )
         self.slider.bind(value=self.onSlider)
@@ -68,6 +68,8 @@ class DepositScreen(MDScreen):
         self.BALANCE = 0
         self.PERCENT = 0
         self.REQUEST_ERR_COUNT = 0
+        self.REQUEST_INSTANCE = None
+        self.IS_ANIM_ONGO = False
 
     def grab_my_id(self, *args):
         cursor = sqlite3.connect(appconf.LOCAL_DB_FILENAME).cursor()
@@ -77,27 +79,30 @@ class DepositScreen(MDScreen):
 
     def success_lookup(self, *args):
         response = json.loads(args[-1])
-        Clock.schedule_once(self.stop_animate_all, 0)
-        self.BALANCE = response['balance']
-        self.PERCENT = response['percent']
-        self.title.text = f"Вклад {response['pack_meaning']}"
-        if self.BALANCE > 2000:
-            self.slider.step = 100
-        self.OpenDepositButton_instance.disabled = False
-        self.slider.max = self.BALANCE
-        self.slider.disabled = False
-        self.sum_textfield.disabled = False
-        self.BALANCE_card.main_text.text = dt.MoneyData(self.BALANCE).AM_TEXT
-        self.ProfitCard_instance.profit_amount.text = f"[size=20sp]{dt.MoneyData((100 / 100) * self.PERCENT).AM_TEXT}[/size]"\
-                                               f"[size=13sp]\n{dt.MoneyData(100 + (100 / 100) * self.PERCENT).AM_TEXT}[/size]"
-        self.ProfitCard_instance.profit_percent.text = f"{self.PERCENT}%"
+        if response['period'] == self.DEP_PERIOD:
+            Clock.schedule_once(self.stop_animate_all, 0)
+            self.IS_ANIM_ONGO = False
+            self.BALANCE = response['balance']
+            self.PERCENT = response['percent']
+            self.title.text = f"Вклад {response['pack_meaning']}"
+            if self.BALANCE > 2000:
+                self.slider.step = 100
+            self.OpenDepositButton_instance.disabled = False
+            self.slider.max = self.BALANCE
+            self.slider.disabled = False
+            self.sum_textfield.disabled = False
+            self.BALANCE_card.main_text.text = dt.MoneyData(self.BALANCE).AM_TEXT
+            self.ProfitCard_instance.profit_amount.text = f"[size=20sp]{dt.MoneyData((100 / 100) * self.PERCENT).AM_TEXT}[/size]"\
+                                                   f"[size=13sp]\n{dt.MoneyData(100 + (100 / 100) * self.PERCENT).AM_TEXT}[/size]"
+            self.ProfitCard_instance.profit_percent.text = f"{self.PERCENT}%"
 
     def error_lookup(self, *args):
         self.REQUEST_ERR_COUNT += 1
         if self.REQUEST_ERR_COUNT >= appconf.REQUEST_ERR_COUNTOUT:
             NETWORK_ERR_POPUP = MDDialog(type="custom", content_cls=elements.ERRPopupFilling())
             NETWORK_ERR_POPUP.open()
-        else: Clock.schedule_once(lambda *a: UrlRequest(url=appconf.SERVER_DOMAIN,
+        else:
+            Clock.schedule_once(lambda *a: UrlRequest(url=appconf.SERVER_DOMAIN,
                     req_body=json.dumps({'method': 'OV_lookup', 'my_id': self.MYID, 'dep_period': self.DEP_PERIOD}),
                     on_success=self.success_lookup, on_error=self.error_lookup,
                     timeout=appconf.REQUEST_TIMEOUT,
@@ -107,16 +112,28 @@ class DepositScreen(MDScreen):
         self.DEP_PERIOD = period
 
     def on_pre_enter(self, *args):
-        Clock.schedule_once(self.start_animate_all, 0)
+        if not self.IS_ANIM_ONGO:
+            Clock.schedule_once(self.start_animate_all, 0)
+            self.IS_ANIM_ONGO = True
         Clock.schedule_once(self.grab_my_id)
-        Clock.schedule_once(lambda *a: UrlRequest(url=appconf.SERVER_DOMAIN,
+        self.REQUEST_INSTANCE = Clock.schedule_once(lambda *a: UrlRequest(url=appconf.SERVER_DOMAIN,
                     req_body=json.dumps({'method': 'OV_lookup', 'my_id': self.MYID, 'dep_period': self.DEP_PERIOD}),
                     on_success=self.success_lookup, on_error=self.error_lookup,
                     timeout=appconf.REQUEST_TIMEOUT,
                     ca_file=certifi.where()), 0)
 
+
     def on_leave(self, *args):
-        Clock.schedule_once(self.stop_animate_all, 0)
+        self.REQUEST_INSTANCE.cancel()
+        self.title.text = "Загрузка"
+        self.BALANCE_card.main_text.text = ""
+        self.slider.value = 100
+        self.slider.disabled = True
+        self.OpenDepositButton_instance.disabled = True
+        self.deposit_amount_card.main_text.text = dt.MoneyData(100).AM_TEXT
+        self.ProfitCard_instance.profit_amount.text = "..."
+        self.ProfitCard_instance.profit_percent.text = "...%"
+        self.sum_textfield.text_field.text = ""
 
     def start_animate_all(self, *args):
         animations.load_animation().start(self.deposit_amount_card)
@@ -143,9 +160,9 @@ class DepositScreen(MDScreen):
         if value == '':
             self.slider.value = self.slider.min
         if value.isdigit():
-            if len(value) >= 4:
-                self.sum_textfield.text_field.text = dt.decorateNumberDigits(value, nofloat=True)
-                Clock.schedule_once(self.moveCur, 0)
+            # if len(value) >= 4:
+            #     self.sum_textfield.text_field.text = dt.decorateNumberDigits(value, nofloat=True)
+            #     Clock.schedule_once(self.moveCur, 0)
             if float(value) <= self.BALANCE:
                 self.deposit_amount_card.main_text.text = dt.MoneyData(value).AM_TEXT
                 animations.slider_anim(value).start(self.slider)

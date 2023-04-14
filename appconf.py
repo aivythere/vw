@@ -10,7 +10,10 @@ PRIMARY_TEXT_COLOR = palette.white_rgba if APP_THEME == "Dark" else palette.blac
 CARD_RADIUS = sp(20)
 OVERALL_PADDING = [50, 10, 50, 50]
 DEFAULT_TRANSITION = MDSlideTransition(duration=.2)
-APP_SIZE = 360, 1080
+APP_SIZE = 480, 1080
+SCREEN_BACKFUNC_STRUCTURE = {"MainMenu": "GOBACK", "ProfitCalc": "MainMenu", "Packs": "MainMenu",
+                             "DepositScreen": "Packs"}
+UNBACKABLE_SCREENS = ["CodeInput", "MainMenu", "Login", "EntryPoint"]
 
 
 # USER_SIDE

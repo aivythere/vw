@@ -56,6 +56,7 @@ class ProfitCalculatorScreen(MDScreen):
         self.PERIOD_BUTTONS_LIST = [self.PeriodButtons_instance.b1, self.PeriodButtons_instance.b2,
                                     self.PeriodButtons_instance.b3, self.PeriodButtons_instance.b4]
         self.REQUEST_ERR_COUNT = 0
+        self.IS_INIT = False
 
     def success_calcdata(self, *args):
         # 3
@@ -72,6 +73,7 @@ class ProfitCalculatorScreen(MDScreen):
         self.ProfitCard_instance.payout_date_label.text = f"Дата выплаты\n" \
                                                           f"~[font=fonts/MS_Bold]{elements.convert_time(int(self.CHOSEN_PERIOD))}[/font]"
         self.ProfitCard_instance.period_label.text = self.CALC_DATA[self.CHOSEN_PERIOD]['name']
+        self.IS_INIT = True
 
 
     def error_calcdata(self, *args):
@@ -87,14 +89,15 @@ class ProfitCalculatorScreen(MDScreen):
                                       ca_file=certifi.where()), appconf.REQUEST_RETRY_INTERVAL)
 
     def on_pre_enter(self, *args):
-        Clock.schedule_once(self.start_animate_all, 0)
-        Clock.schedule_once(lambda *a: UrlRequest(url=appconf.SERVER_DOMAIN, req_body=json.dumps({"method": "CALCREQUEST"}),
-                                                  on_success=self.success_calcdata, on_error=self.error_calcdata,
-                                                  timeout=appconf.REQUEST_TIMEOUT,
-                                                  ca_file=certifi.where()), 0)
+        if not self.IS_INIT:
+            Clock.schedule_once(self.start_animate_all, 0)
+            Clock.schedule_once(lambda *a: UrlRequest(url=appconf.SERVER_DOMAIN, req_body=json.dumps({"method": "CALCREQUEST"}),
+                                                      on_success=self.success_calcdata, on_error=self.error_calcdata,
+                                                      timeout=appconf.REQUEST_TIMEOUT,
+                                                      ca_file=certifi.where()), 0)
 
-        # animations.change_size_anim().start(self.PERIOD_BUTTONS_LIST[0])
-        self.PERIOD_BUTTONS_LIST[0].md_bg_color = palette.accent_yellow_rgba
+            # animations.change_size_anim().start(self.PERIOD_BUTTONS_LIST[0])
+            self.PERIOD_BUTTONS_LIST[0].md_bg_color = palette.accent_yellow_rgba
 
     def on_leave(self, *args):
         Clock.schedule_once(self.stop_animate_all, 0)
@@ -127,25 +130,26 @@ class ProfitCalculatorScreen(MDScreen):
             self.deposit_amount_card.main_text.text = dt.MoneyData(value).AM_TEXT
             self.DEPOSIT_SUM = int(value)
             Clock.schedule_once(self.refresh_elements, 0)
-            if len(value) >= 4:
-                self.deposit_amount_input.text_field.text = dt.decorateNumberDigits(value, nofloat=True)
-                Clock.schedule_once(self.moveCursor, 0)
+            # if len(value) >= 4:
+            #     self.deposit_amount_input.text_field.text = dt.decorateNumberDigits(value, nofloat=True)
+            #     Clock.schedule_once(self.moveCursor, 0)
             if int(value) < 100:
                 animations.change_text_color_anim(palette.unavailable_red).start(self.deposit_amount_card.main_text)
             else:
                 animations.change_text_color_anim(appconf.PRIMARY_TEXT_COLOR).start(self.deposit_amount_card.main_text)
 
     def refresh_elements(self, *args):
-        textlen = len(dt.MoneyData(self.DEPOSIT_SUM / 100 * self.CALC_DATA[self.CHOSEN_PERIOD]['percent']).AM_TEXT)
-        self.ProfitCard_instance.profit_label.font_size = sp(25-textlen/10)
-        self.deposit_amount_card.main_text.text = dt.MoneyData(self.DEPOSIT_SUM).AM_TEXT
-        self.ProfitCard_instance.profit_label.text = f"[size={elements.dynamic_size(textlen)}sp]{dt.MoneyData(self.DEPOSIT_SUM / 100 * self.CALC_DATA[self.CHOSEN_PERIOD]['percent']).AM_TEXT}[/size]" \
-                                                     f"[size=15sp]\nприбыль[/size]"
-        self.ProfitCard_instance.profit_summary_label.text = f"{dt.MoneyData(self.DEPOSIT_SUM + self.DEPOSIT_SUM / 100 * self.CALC_DATA[self.CHOSEN_PERIOD]['percent']).AM_TEXT} итого"
-        self.ProfitCard_instance.payout_date_label.text = f"Дата выплаты\n" \
-                                                          f"~[font=fonts/MS_Bold]{elements.convert_time(int(self.CHOSEN_PERIOD))}[/font]"
-        self.ProfitCard_instance.period_label.text = f"[size=25sp]{self.CALC_DATA[self.CHOSEN_PERIOD]['name']}[/size]" \
-                                                     f"[size=15dp]\n{self.CALC_DATA[self.CHOSEN_PERIOD]['percent']}%[/size]"
+        if self.CALC_DATA:
+            textlen = len(dt.MoneyData(self.DEPOSIT_SUM / 100 * self.CALC_DATA[self.CHOSEN_PERIOD]['percent']).AM_TEXT)
+            self.ProfitCard_instance.profit_label.font_size = sp(25-textlen/10)
+            self.deposit_amount_card.main_text.text = dt.MoneyData(self.DEPOSIT_SUM).AM_TEXT
+            self.ProfitCard_instance.profit_label.text = f"[size={elements.dynamic_size(textlen)}sp]{dt.MoneyData(self.DEPOSIT_SUM / 100 * self.CALC_DATA[self.CHOSEN_PERIOD]['percent']).AM_TEXT}[/size]" \
+                                                         f"[size=15sp]\nприбыль[/size]"
+            self.ProfitCard_instance.profit_summary_label.text = f"{dt.MoneyData(self.DEPOSIT_SUM + self.DEPOSIT_SUM / 100 * self.CALC_DATA[self.CHOSEN_PERIOD]['percent']).AM_TEXT} итого"
+            self.ProfitCard_instance.payout_date_label.text = f"Дата выплаты\n" \
+                                                              f"~[font=fonts/MS_Bold]{elements.convert_time(int(self.CHOSEN_PERIOD))}[/font]"
+            self.ProfitCard_instance.period_label.text = f"[size=25sp]{self.CALC_DATA[self.CHOSEN_PERIOD]['name']}[/size]" \
+                                                         f"[size=15dp]\n{self.CALC_DATA[self.CHOSEN_PERIOD]['percent']}%[/size]"
 
     def start_animate_all(self, *args):
         animations.load_animation().start(self.deposit_amount_card)

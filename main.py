@@ -11,6 +11,8 @@ import deposit_screen
 import cache_manager
 import packs_screen
 from kivy.utils import platform
+from kivy.base import EventLoop
+import elements
 
 # class KindaScreenManager(MDScreenManager):
 #     def __init__(self):
@@ -63,6 +65,17 @@ class PassiveIncomeApp(MDApp):
             Window.size = appconf.APP_SIZE
 
         return self.ScreenManager
+
+    def on_start(self):
+        EventLoop.window.bind(on_keyboard=self.hook_keyboard)
+
+    def hook_keyboard(self, window, key, *largs):
+        if key == 27:
+            # do what you want, return True for stopping the propagation
+            if self.ScreenManager.current not in appconf.UNBACKABLE_SCREENS:
+                 elements.change_screen(self.ScreenManager, appconf.SCREEN_BACKFUNC_STRUCTURE[self.ScreenManager.current],
+                                        'right')
+            return True
 
 
 if __name__ == '__main__':

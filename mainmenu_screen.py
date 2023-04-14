@@ -52,6 +52,7 @@ class MainMenuScreen(MDScreen):
 
         self.ID = None
         self.REQUEST_ERR_COUNT = 0
+        self.IS_INIT = False
 
     def screenHandler(self, data, *args):
         if data == "ProfitCalc":
@@ -66,12 +67,15 @@ class MainMenuScreen(MDScreen):
     def on_pre_enter(self, *args):
         Clock.schedule_once(self.start_animate_all, 0)
         Clock.schedule_once(self.grab_my_id)
-        Clock.schedule_once(lambda *a: UrlRequest(url=appconf.SERVER_DOMAIN,
+        if not self.IS_INIT:
+            Clock.schedule_once(lambda *a: UrlRequest(url=appconf.SERVER_DOMAIN,
                                                   req_body=json.dumps({'method': 'MM_lookup', 'id': self.ID}),
                                                   on_success=self.success_mm,
                                                   on_error=self.error_mm,
                                                   timeout=appconf.REQUEST_TIMEOUT,
                                                   ca_file=certifi.where()), 0)
+        else: Clock.schedule_once(self.stop_animate_all, 0)
+
 
     def on_leave(self, *args):
         Clock.schedule_once(self.stop_animate_all, 0)
@@ -86,6 +90,8 @@ class MainMenuScreen(MDScreen):
         self.MyDeposits_button.disabled = False
         self.ProfitCalc_button.disabled = False
         self.RefferalProgram_button.disabled = False
+        self.IS_INIT = True
+
 
     def error_mm(self, *args):
         self.REQUEST_ERR_COUNT += 1
@@ -131,11 +137,10 @@ class MainMenuScreen(MDScreen):
             super().__init__()
             self.md_bg_color = palette.blued_gray_main_rgba
             self.radius = appconf.CARD_RADIUS
-            # self.size_hint_y = 1.5
             main_grid = MDGridLayout(cols=2, padding=50)
             text_grid = MDGridLayout(cols=1, rows=4)
 
-            self.email_label = bfont.MSFont(text='', size='15sp', style='Bold', size_hint_y=.1)
+            self.email_label = bfont.MSFont(text='Загрузка...', size='15sp', style='Bold', size_hint_y=.1)
             self.balance_deposits_label = bfont.MSFont(text='',
                                               size='15sp', size_hint_y=.2)
 

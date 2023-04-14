@@ -33,13 +33,13 @@ class CodeInputScreen(MDScreen):
                                                    font_size=25)
         self.SubmitCode_instance = self.SubmitCode(self.submitCode)
 
-        grid.add_widget(MDBoxLayout(size_hint_y=.5))
+        grid.add_widget(MDBoxLayout(size_hint_y=.7))
         grid.add_widget(self.title)
         grid.add_widget(self.email_label)
         grid.add_widget(MDSeparator())
         grid.add_widget(self.code_input)
         grid.add_widget(self.SubmitCode_instance)
-        grid.add_widget(MDBoxLayout(size_hint_y=.5))
+        grid.add_widget(MDBoxLayout())
 
         self.add_widget(grid)
 

@@ -57,8 +57,8 @@ class BetterMoneyTextInput(MDCard):
             line_color_focus=(1, 1, 1, 1),
             pos_hint={'center_y': .5, 'center_x': .45},
             size_hint_x=.7,
-            cursor_color=(1, 1, 1, 1)
-            # input_filter='int'
+            cursor_color=(1, 1, 1, 1),
+            input_filter='int'
         )
         opg.add_widget(self.text_field)
         input_text_card.add_widget(opg)
@@ -68,12 +68,11 @@ class BetterMoneyTextInput(MDCard):
 
         grid.add_widget(input_text_card)
         grid.add_widget(
-            dd := MDLabel(
-                text="₽", font_name='fonts/MS_XBold', halign='center', valign='center',
+                bfont.MSFont(
+                text="₽", style='Bold', size='40sp', halign='center', valign='center',
                 size_hint_x=.1, text_color=(0, 0, 0, 1), theme_text_color="Custom"
             )
         )
-        dd.font_size = sp(40)
         self.add_widget(grid)
 
 
@@ -87,8 +86,8 @@ class ERRPopupFilling(MDBoxLayout):
         err_image = Image(source="images/error.png", allow_stretch=True,
                           size_hint=[.5, .5])
         err_caption = bfont.MSFont(
-            text=f'[size=25sp][font=fonts/MS_Bold]Ошибка сети.[/font][/size]'
-                 f'[size=20sp]\nПроверьте подключение к сети, либо узнайте статус серверов на {appconf.DOMAIN}',
+            text=f'[size=20sp][font=fonts/MS_Bold]Ошибка сети.[/font][/size]'
+                 f'[size=15sp]\n\nПроверьте подключение к сети, либо узнайте статус серверов на {appconf.DOMAIN}',
             halign='center', valign='center')
         self.ErrorCard_instance.inner_grid.add_widget(err_image)
         self.ErrorCard_instance.inner_grid.add_widget(err_caption)

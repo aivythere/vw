@@ -1,4 +1,5 @@
 accent_yellow_rgba = (254/255, 202/255, 65/255, 1)
+# accent_yellow_rgba = (68/255, 200/255, 255/255, 1)
 blued_gray_main_rgba = (232/255, 232/255, 242/255, 1)
 text_dark_grey_rgba = (82/255, 82/255, 82/255, 1)
 white_rgba = (1, 1, 1, 1)
