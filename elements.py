@@ -230,5 +230,5 @@ def convert_time(days: int):
 
 
 def dynamic_size(txl):
-    return 25 if txl < 9 else 20 if txl < 12 else 17 if txl < 14 else 13
+    return 25 if txl < 12 else 20 if txl < 14 else 17 if txl < 18 else 15
     # 20 if textlen > 9 else 15 if textlen > 12 else 25

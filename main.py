@@ -13,6 +13,8 @@ import packs_screen
 from kivy.utils import platform
 from kivy.base import EventLoop
 import elements
+from kivymd.utils.set_bars_colors import set_bars_colors
+
 
 # class KindaScreenManager(MDScreenManager):
 #     def __init__(self):
@@ -36,6 +38,7 @@ class PassiveIncomeApp(MDApp):
 
     def build(self):
         self.ScreenManager = MDScreenManager()
+        # Window.fullscreen = True
 
         self.theme_cls.theme_style = appconf.APP_THEME
         self.theme_cls.primary_palette = appconf.APP_PRIMARY_PALLETE
@@ -63,11 +66,20 @@ class PassiveIncomeApp(MDApp):
         self.ScreenManager.current = "EntryPoint"
         if platform == "macosx":
             Window.size = appconf.APP_SIZE
+        if platform == "android":
+            self.status_bar_colors()
 
         return self.ScreenManager
 
     def on_start(self):
         EventLoop.window.bind(on_keyboard=self.hook_keyboard)
+
+    def status_bar_colors(self):
+        set_bars_colors(
+            self.theme_cls.primary_color,  # status bar color
+            self.theme_cls.primary_color,  # navigation bar color
+            "Dark",  # icons color of status bar
+        )
 
     def hook_keyboard(self, window, key, *largs):
         if key == 27:
