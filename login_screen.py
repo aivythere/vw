@@ -78,7 +78,7 @@ class LoginScreen(MDScreen):
 
         self.REQUEST_ERR_COUNT += 1
         if self.REQUEST_ERR_COUNT >= appconf.REQUEST_ERR_COUNTOUT:
-            NETWORK_ERR_POPUP = MDDialog(type="custom", content_cls=elements.ERRPopupFilling())
+            NETWORK_ERR_POPUP = elements.ErrorPopup()
             NETWORK_ERR_POPUP.open()
             self.continue_button.disabled = False
         else:

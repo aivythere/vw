@@ -85,34 +85,6 @@ class BetterMoneyTextInput(MDCard):
         self.add_widget(grid)
 
 
-class ERRPopupFilling(MDBoxLayout):
-    def __init__(self):
-        super().__init__()
-        self.size_hint_y = None
-        self.height = sp(150)
-        self.md_bg_color = (0, 0, 0, 0)
-        self.ErrorCard_instance = self.ErrorCard()
-        err_image = Image(source="images/error.png", allow_stretch=True,
-                          size_hint=[.5, .5])
-        err_caption = bfont.MSFont(
-            text=f'[size=20sp][font=fonts/MS_Bold]Ошибка сети.[/font][/size]'
-                 f'[size=15sp]\n\nПроверьте подключение к сети, либо узнайте статус серверов на {appconf.DOMAIN}',
-            halign='center', valign='center')
-        self.ErrorCard_instance.inner_grid.add_widget(err_image)
-        self.ErrorCard_instance.inner_grid.add_widget(err_caption)
-        self.add_widget(self.ErrorCard_instance)
-
-    class ErrorCard(MDCard):
-        def __init__(self):
-            super().__init__()
-            self.md_bg_color = (0, 0, 0, 0)
-            self.inner_grid = MDGridLayout(cols=1, rows=2, spacing=50, size_hint_y=None, height=dp(150))
-            self.padding = [50, 50, 50, 50]
-            self.radius = 30
-            self.size_hint = [.5, .5]
-            self.add_widget(self.inner_grid)
-
-
 class BetterTextInput(MDCard):
     def __init__(self, pic_filename, on_text_change=lambda *a: ..., placeholder='', input_filter=False, font_size=30,
                  **kwargs):
@@ -237,10 +209,13 @@ class ApproveBuyPopup(MDDialog):
     def __init__(self, sum, per, pyo, prf, date, baf, **kwargs):
         self.type = "custom"
         self.content_cls = self.Contents(sum, per, pyo, prf, date, baf, self.dismiss)
+
+        self.size_hint = [None, None]
+        self.width = Window.width - 50
+        self.height = self.content_cls.height
+
         self.opacity = 0
         self.dismissable = True
-        self.size_hint_x = None
-        self.width = Window.width-50
         self.elevation = 0
         super(ApproveBuyPopup, self).__init__(**kwargs)
 
@@ -261,6 +236,7 @@ class ApproveBuyPopup(MDDialog):
 
             self.rows = 3
             self.md_bg_color = (0, 0, 0, 0)
+            self.padding = [0, 0, 0, 30]
 
             checkmark_icon = Image(source='images/check.png', allow_stretch=True, size_hint_y=.3)
             label = bfont.MSFont(text=f'Сумма: [font=fonts/MS_Bold]{sum_raw}[/font]\n'
@@ -306,10 +282,13 @@ class PackInfoPopup(MDDialog):
     def __init__(self, od, os, cd, cs, **kwargs):
         self.type = "custom"
         self.content_cls = self.Contents(od, os, cd, cs, self.dismiss)
+
+        self.size_hint = [None, None]
+        self.width = Window.width - 50
+        self.height = self.content_cls.height
+
         self.opacity = 0
         self.dismissable = True
-        self.size_hint_x = None
-        self.width = Window.width - 50
         self.elevation = 0
         super(PackInfoPopup, self).__init__(**kwargs)
 
@@ -330,6 +309,7 @@ class PackInfoPopup(MDDialog):
             self.rows = 3
             self.md_bg_color = (0, 0, 0, 0)
             self.spacing = 30
+            self.padding = [0, 0, 0, 30]
 
             profit = close_sum_raw - open_sum_raw
             daysleft = ((strtodt(close_date) - strtodt(open_date)).days)
@@ -367,6 +347,51 @@ class PackInfoPopup(MDDialog):
                     size_hint_y=.5
                 )
             )
+
+
+class ErrorPopup(MDDialog):
+    def __init__(self, **kwargs):
+        self.type = "custom"
+        self.content_cls = self.ERRPopupFilling()
+
+        self.size_hint = [None, None]
+        self.width = Window.width - 50
+        self.height = self.content_cls.height
+
+        self.opacity = 0
+        self.elevation = 0
+        self.radius = [appconf.CARD_RADIUS for _ in range(4)]
+        super(ErrorPopup, self).__init__(**kwargs)
+
+    def dismiss(self, *_args, **kwargs):
+        super(ErrorPopup, self).dismiss(force=True)
+
+    def on_pre_open(self):
+        super(ErrorPopup, self).on_pre_open()
+        animations.backbutton_opacity(0, 1, .1).start(self)
+
+    class ERRPopupFilling(ButtonBehavior, MDGridLayout):
+        def __init__(self, df=None):
+            super().__init__()
+            self.size_hint_y = None
+            self.height = sp(300)
+            self.rows = 3
+            self.padding = [0, 0, 0, 30]
+            self.md_bg_color = (0, 0, 0, 0)
+            self.spacing = 30
+
+            self.pic = Image(source='images/error.png', allow_stretch=True, size_hint_y=.5,
+                             pos_hint={'center_x': .5, 'center_y': .5})
+            self.errlabel = bfont.MSFont("[font=fonts/MS_Bold]Ошибка сети[/font]\n\n"
+                                         "[size=20sp]Не можем подключиться к серверу, проверьте свой интернет "
+                                         f"или узнайте состояние серверов на {appconf.DOMAIN}[/size]",
+                                         halign='center')
+            self.add_widget(self.pic)
+            self.add_widget(self.errlabel)
+
+        def on_release(self):
+            print('w')
+
 
 def convert_time(days: int):
     td = timedelta(days=int(days))

@@ -4,7 +4,6 @@ import certifi
 from kivy.animation import Animation
 from kivy.clock import Clock
 from kivy.network.urlrequest import UrlRequest
-from kivymd.uix.dialog import MDDialog
 from kivymd.uix.screen import MDScreen
 from kivymd.uix.gridlayout import MDGridLayout
 from kivymd.uix.card import MDCard, MDSeparator
@@ -133,10 +132,6 @@ class DepositScreen(MDScreen):
                 cng = sd.CongratzScreen(self.scr)
                 self.scr.add_widget(cng)
 
-                cng.update(period=self.DEP_PERIOD, summ=self.DEP_SUM,
-                           payout=elements.cash(self.DEP_SUM, self.PERCENT),
-                           profit=elements.cash(self.DEP_SUM, self.PERCENT, True)
-                           )
                 elements.change_screen(self.scr, "Congratz")
 
                 return
@@ -202,7 +197,7 @@ class DepositScreen(MDScreen):
     def error_lookup(self, *args):
         self.REQUEST_ERR_COUNT += 1
         if self.REQUEST_ERR_COUNT >= appconf.REQUEST_ERR_COUNTOUT:
-            NETWORK_ERR_POPUP = MDDialog(type="custom", content_cls=elements.ERRPopupFilling())
+            NETWORK_ERR_POPUP = elements.ErrorPopup()
             NETWORK_ERR_POPUP.open()
         else:
             Clock.schedule_once(lambda *a: UrlRequest(url=appconf.SERVER_DOMAIN,

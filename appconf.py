@@ -12,7 +12,7 @@ OVERALL_PADDING = [50, 10, 50, 50]
 DEFAULT_TRANSITION = MDSlideTransition(duration=.2)
 APP_SIZE = 480, 1080
 SCREEN_BACKFUNC_STRUCTURE = {"MainMenu": "GOBACK", "ProfitCalc": "MainMenu", "Packs": "MainMenu",
-                             "DepositScreen": "Packs", "MyPacks": "MainMenu", }
+                             "DepositScreen": "Packs", "MyPacks": "MainMenu", "Congratz": "MainMenu"}
 UNBACKABLE_SCREENS = ["CodeInput", "MainMenu", "Login", "EntryPoint"]
 
 
@@ -21,9 +21,9 @@ SERVER_DOMAIN = 'http://localhost:8000/'
 LOCAL_DB_FILENAME = 'local.db'
 REQUEST_ERR_COUNTOUT = 10
 REQUEST_TIMEOUT = 10
-REQUEST_RETRY_INTERVAL = .2
+REQUEST_RETRY_INTERVAL = 0
 PLACEHOLDER_LIST = ['Имя', 'E-mail', 'Телефон', 'Код']
-DOMAIN = 'prettycloneisnt.com'
+DOMAIN = 'nodomain.com' #  'prettycloneisnt.com'
 DB_CREATION_QUERY = """
 CREATE TABLE "data" (
 	"my_id"	INTEGER,

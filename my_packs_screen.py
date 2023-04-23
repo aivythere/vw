@@ -31,7 +31,7 @@ class MyPacksScreen(MDScreen):
         self.title_lo.add_widget(self.title)
 
         #separator
-        self.packs_container = MDScrollView(size_hint_y=1.5)
+        self.packs_container = MDScrollView(size_hint_y=2)
         # TODO packs_grid.height = sp(len(количество депов) * 50 или 100)
         self.packs_grid = MDGridLayout(cols=1, spacing=30, size_hint_y=None, height=sp(400))
         self.placeholder = MDCard(md_bg_color=palette.blued_gray_main_rgba, radius=appconf.CARD_RADIUS,
@@ -48,6 +48,7 @@ class MyPacksScreen(MDScreen):
 
         self.MYID = None
         self.IS_INIT = False
+        self.LAST_RESPONSE = None
 
     def on_pre_enter(self, *args):
         Clock.schedule_once(self.grab_my_id, 0)
@@ -84,8 +85,21 @@ class MyPacksScreen(MDScreen):
     #     print(self.packs_container.scroll_y)
 
     def createDepositItem(self, *args):
+        r = json.loads(args[-1])
+        print(r)
+
+        if self.LAST_RESPONSE and self.LAST_RESPONSE != r:
+            res = r.keys() - self.LAST_RESPONSE.keys()
+            self.packs_grid.height += sp(len(res) * 100 + 100)
+            for i in res:
+                self.packs_grid.add_widget(
+                    self.DepositItem(i, f"{r[i]['period']} {elements.dayordays(r[i]['period'])}",
+                                     r[i]['open_sum'], r[i]['open_date'], r[i]['close_sum'],
+                                     r[i]['percent'], r[i]['payout_date'], self.packChooseHandler))
+
+        self.LAST_RESPONSE = r
+
         if not self.IS_INIT:
-            r = json.loads(args[-1])
 
             self.title.text = "Мои вклады"
             Animation.stop_all(self.placeholder)
@@ -99,6 +113,8 @@ class MyPacksScreen(MDScreen):
                                          r[i]['percent'], r[i]['payout_date'], self.packChooseHandler))
             self.IS_INIT = True
             Clock.schedule_once(lambda *a: animations.scroll_hint().start(self.packs_container), 0.5)
+            return
+
 
     def grab_my_id(self, *args):
         cursor = sqlite3.connect(appconf.LOCAL_DB_FILENAME).cursor()
@@ -142,7 +158,7 @@ class MyPacksScreen(MDScreen):
             self.payout_label = bfont.MSFont(text=f"{dt.MoneyData(payout).AM_TEXT}", style="Bold",
                                              color=palette.dark_green, size="20sp", halign="right")
             self.percent_label = bfont.MSFont(text=f"{percent}%", style="Bold", size="20sp", halign="right")
-            self.payout_date_label = bfont.MSFont(text=f"~{payout_date}", style="Bold", size="15sp", halign="right")
+            self.payout_date_label = bfont.MSFont(text=f"~{payout_date}", style="Bold", size="13sp", halign="right")
 
             info_grid.add_widget(self.period_op_label)
             info_grid.add_widget(self.open_date_label)

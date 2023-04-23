@@ -125,7 +125,7 @@ class MainMenuScreen(MDScreen):
     def error_mm(self, *args):
         self.REQUEST_ERR_COUNT += 1
         if self.REQUEST_ERR_COUNT >= appconf.REQUEST_ERR_COUNTOUT:
-            NETWORK_ERR_POPUP = MDDialog(type="custom", content_cls=elements.ERRPopupFilling())
+            NETWORK_ERR_POPUP = elements.ErrorPopup()
             NETWORK_ERR_POPUP.open()
         else:
             Clock.schedule_once(lambda *a: UrlRequest(url=appconf.SERVER_DOMAIN,

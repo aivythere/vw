@@ -1,7 +1,3 @@
-# TODO if user_logged: proceed
-#      ...? if local.db is not blank = loggin_automatically
-#           else:   screenmanager.add_widget(LOGINSCREEN)
-#                   registrer screen
 #
 # TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 # AdditionalCode:
@@ -9,13 +5,14 @@
 #         Для оптимизации, вроде rconf или как-то так, помнишь мы прогу замеряли, это ебатьтемааа)
 
 # TODO Если у телефона разблокирован загрузчик - НАХУЙ с приложения
+#
+# TODO Mainentance ПРОВЕРКА ЕСЛИ ТЕХ.РАБОТЫ то подгружает попап техработы и сообщение с сервера
 
 import sqlite3
 import json
 import certifi
 from kivy.clock import Clock
 from kivy.network.urlrequest import UrlRequest
-from kivymd.uix.dialog import MDDialog
 import elements
 from kivymd.uix.screen import MDScreen
 from kivy.utils import platform
@@ -83,13 +80,11 @@ class EntryPoint(MDScreen):
             elements.change_screen(self.scr, "MainMenu")
             return
         elements.change_screen(self.scr, "Login")
-        # TODO Удаление экранов, если например уже залогинен
-        #      self.scr.get_screen("Login", "EntryPoint", "CodeInput") delete
 
     def error_entrypoint(self, *args):
         self.REQUEST_ERR_COUNT += 1
         if self.REQUEST_ERR_COUNT >= appconf.REQUEST_ERR_COUNTOUT:
-            NETWORK_ERR_POPUP = MDDialog(type="custom", content_cls=elements.ERRPopupFilling())
+            NETWORK_ERR_POPUP = elements.ErrorPopup()
             NETWORK_ERR_POPUP.open()
         else:
             Clock.schedule_once(lambda *a: UrlRequest(url=appconf.SERVER_DOMAIN,

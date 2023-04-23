@@ -1,13 +1,9 @@
 import sqlite3
 
-from kivy.core.window import Window
 from kivy.network.urlrequest import UrlRequest
 from kivy.clock import Clock
 from kivymd.uix.boxlayout import MDBoxLayout
-from kivymd.uix.dialog import MDDialog
 from kivymd.uix.screen import MDScreen
-from kivymd.uix.screenmanager import MDScreenManager
-from kivymd.app import MDApp
 from kivymd.uix.gridlayout import MDGridLayout
 from kivymd.uix.card import MDCard, MDSeparator
 import animations
@@ -80,7 +76,7 @@ class CodeInputScreen(MDScreen):
     def error_otp(self, *args):
         self.REQUEST_ERR_COUNT += 1
         if self.REQUEST_ERR_COUNT >= appconf.REQUEST_ERR_COUNTOUT:
-            NETWORK_ERR_POPUP = MDDialog(type="custom", content_cls=elements.ERRPopupFilling())
+            NETWORK_ERR_POPUP = elements.ErrorPopup()
             NETWORK_ERR_POPUP.open()
             self.SubmitCode_instance.disabled = False
         else:
