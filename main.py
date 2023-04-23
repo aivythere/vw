@@ -101,7 +101,7 @@ class PassiveIncomeApp(MDApp):
         set_bars_colors(
             palette.white_rgba if appconf.APP_THEME == "Dark" else palette.black_rgba,
             palette.white_rgba if appconf.APP_THEME == "Dark" else palette.black_rgba,
-            "Light" if appconf.APP_THEME == "Dark" else "Light",
+            "Light" if appconf.APP_THEME == "Dark" else "Dark",
         )
 
     def hook_keyboard(self, window, key, *largs):
