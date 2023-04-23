@@ -77,6 +77,7 @@ class PassiveIncomeApp(MDApp):
             Window.size = appconf.APP_SIZE
         if platform == "android":
             self.status_bar_colors()
+            appconf.APP_SIZE = Window.size
 
         return self.ScreenManager
 
@@ -99,9 +100,9 @@ class PassiveIncomeApp(MDApp):
 
     def status_bar_colors(self):
         set_bars_colors(
-            palette.white_rgba if appconf.APP_THEME == "Dark" else palette.black_rgba,
-            palette.white_rgba if appconf.APP_THEME == "Dark" else palette.black_rgba,
-            "Light" if appconf.APP_THEME == "Dark" else "Dark",
+            palette.white_rgba if appconf.APP_THEME == "Light" else palette.black_rgba,  # status bar color
+            palette.white_rgba if appconf.APP_THEME == "Light" else palette.black_rgba,  # navigation bar color
+            "Dark" if appconf.APP_THEME == "Light" else "Light",  # icons color of status bar (opposite)
         )
 
     def hook_keyboard(self, window, key, *largs):

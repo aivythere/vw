@@ -51,6 +51,7 @@ class EntryPoint(MDScreen):
         r = args[-1].replace('\n', '')
         if platform != "macosx":
             appconf.SERVER_DOMAIN = f"http://{r}/"
+            print(f"{appconf.SERVER_DOMAIN}: SERVER DOMAIN")
         con = sqlite3.connect(appconf.LOCAL_DB_FILENAME)
         cursor = con.cursor()
         try:

@@ -43,9 +43,9 @@ class MainMenuScreen(MDScreen):
                                                         func=self.screenHandler, data="RefProgram", disabled=True)
 
         moneymove_grid = MDGridLayout(cols=2, spacing=50, size_hint_y=.5)
-        self.TopUp_button = elements.IconCard(text="Пополнить", image_path='images/top-up.png', data="TopUp",
+        self.TopUp_button = elements.IconCard(text="Депозит", image_path='images/top-up.png', data="TopUp",
                                               func=self.screenHandler, disabled=True)
-        self.Withdraw_button = elements.IconCard(text="Вывести", image_path='images/withdrawal.png', data="Withdraw",
+        self.Withdraw_button = elements.IconCard(text="Вывод", image_path='images/withdrawal.png', data="Withdraw",
                                                  func=self.screenHandler, disabled=True)
         moneymove_grid.add_widget(self.TopUp_button)
         moneymove_grid.add_widget(self.Withdraw_button)

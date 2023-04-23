@@ -8,14 +8,13 @@ from kivymd.uix.card import MDCard
 from kivymd.uix.dialog import MDDialog
 from kivymd.uix.floatlayout import MDFloatLayout
 from kivymd.uix.gridlayout import MDGridLayout
-from kivymd.uix.label import MDLabel
-from kivymd.uix.slider import MDSlider
 from kivymd.uix.textfield import MDTextField
 import bfont
 import palette
 import appconf
 import animations
 import dt
+from kivy.core.window import Window
 
 
 def change_screen(screen_manager, to_sc, ts_dir='left', no_ts=False):
@@ -240,6 +239,9 @@ class ApproveBuyPopup(MDDialog):
         self.content_cls = self.Contents(sum, per, pyo, prf, date, baf, self.dismiss)
         self.opacity = 0
         self.dismissable = True
+        self.size_hint_x = None
+        self.width = Window.width-50
+        self.elevation = 0
         super(ApproveBuyPopup, self).__init__(**kwargs)
 
     def on_pre_open(self):
@@ -298,6 +300,7 @@ class ApproveBuyPopup(MDDialog):
             self.add_widget(label)
             self.add_widget(btn_layout)
 
+
 class PackInfoPopup(MDDialog):
     # pass
     def __init__(self, od, os, cd, cs, **kwargs):
@@ -305,6 +308,9 @@ class PackInfoPopup(MDDialog):
         self.content_cls = self.Contents(od, os, cd, cs, self.dismiss)
         self.opacity = 0
         self.dismissable = True
+        self.size_hint_x = None
+        self.width = Window.width - 50
+        self.elevation = 0
         super(PackInfoPopup, self).__init__(**kwargs)
 
     def on_pre_open(self):
@@ -320,6 +326,7 @@ class PackInfoPopup(MDDialog):
             super().__init__(**kwargs)
             self.size_hint_y = None
             self.height = sp(400)
+            self.size_hint_x = 1.5
             self.rows = 3
             self.md_bg_color = (0, 0, 0, 0)
             self.spacing = 30
@@ -330,7 +337,7 @@ class PackInfoPopup(MDDialog):
             self.add_widget(
                 bfont.MSFont(
                     "Информация", halign='center', style='Bold',
-                    size_hint_y=.1
+                    size_hint_y=.1, size="25sp"
                 )
             )
 

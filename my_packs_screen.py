@@ -26,14 +26,18 @@ class MyPacksScreen(MDScreen):
 
         grid = MDGridLayout(cols=1, padding=50, spacing=50)
 
-        self.title = bfont.MSFont(text="Мои вклады", style="Bold", size_hint_y=.5)
+        self.title = bfont.MSFont(text="Загрузка...", style="Bold", size_hint_y=.5)
         self.title_lo = elements.Title(self.scr, size_hint_y=.2)
         self.title_lo.add_widget(self.title)
 
         #separator
         self.packs_container = MDScrollView(size_hint_y=1.5)
         # TODO packs_grid.height = sp(len(количество депов) * 50 или 100)
-        self.packs_grid = MDGridLayout(cols=1, spacing=30, size_hint_y=None)
+        self.packs_grid = MDGridLayout(cols=1, spacing=30, size_hint_y=None, height=sp(400))
+        self.placeholder = MDCard(md_bg_color=palette.blued_gray_main_rgba, radius=appconf.CARD_RADIUS,
+                                  size_hint_y=None, height=sp(800))
+
+        self.packs_grid.add_widget(self.placeholder)
         self.packs_container.add_widget(self.packs_grid)
 
         grid.add_widget(self.title_lo)
@@ -48,7 +52,8 @@ class MyPacksScreen(MDScreen):
     def on_pre_enter(self, *args):
         Clock.schedule_once(self.grab_my_id, 0)
         Clock.schedule_once(self.getPacksUrlReq, 0)
-        Clock.schedule_once(lambda *a: animations.scroll_hint().start(self.packs_container), 2)
+        if not self.IS_INIT:
+            animations.load_animation(.1).start(self.placeholder)
 
     def packChooseHandler(self, *args):
         item = args[0]
@@ -81,6 +86,10 @@ class MyPacksScreen(MDScreen):
     def createDepositItem(self, *args):
         if not self.IS_INIT:
             r = json.loads(args[-1])
+
+            self.title.text = "Мои вклады"
+            Animation.stop_all(self.placeholder)
+            self.packs_grid.remove_widget(self.placeholder)
             if not r.get("response"):  # если ответ не содержит "response", в этом случае только если паков нет
                 self.packs_grid.height = sp(len(r)*100+200)
                 for i in r.keys():
@@ -89,7 +98,7 @@ class MyPacksScreen(MDScreen):
                                          r[i]['open_sum'], r[i]['open_date'], r[i]['close_sum'],
                                          r[i]['percent'], r[i]['payout_date'], self.packChooseHandler))
             self.IS_INIT = True
-
+            Clock.schedule_once(lambda *a: animations.scroll_hint().start(self.packs_container), 0.5)
 
     def grab_my_id(self, *args):
         cursor = sqlite3.connect(appconf.LOCAL_DB_FILENAME).cursor()
@@ -126,8 +135,8 @@ class MyPacksScreen(MDScreen):
             info_grid = MDGridLayout(rows=2)
             payout_grid = MDGridLayout(rows=3)
 
-            self.period_op_label = bfont.MSFont(text=f"{period_meaning} [font=fonts/MS_Medium]({dt.MoneyData(open_price).AM_TEXT})[/font]",
-                                                style="Bold", size="20sp", )
+            self.period_op_label = bfont.MSFont(text=f"{period_meaning} [font=fonts/MS_Medium][/font]",
+                                                style="Bold", size="20sp")
             self.open_date_label = bfont.MSFont(text=f"Открыт: [font=fonts/MS_Bold]{open_date}[/font]", size="15sp")
 
             self.payout_label = bfont.MSFont(text=f"{dt.MoneyData(payout).AM_TEXT}", style="Bold",

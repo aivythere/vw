@@ -12,7 +12,7 @@ OVERALL_PADDING = [50, 10, 50, 50]
 DEFAULT_TRANSITION = MDSlideTransition(duration=.2)
 APP_SIZE = 480, 1080
 SCREEN_BACKFUNC_STRUCTURE = {"MainMenu": "GOBACK", "ProfitCalc": "MainMenu", "Packs": "MainMenu",
-                             "DepositScreen": "Packs"}
+                             "DepositScreen": "Packs", "MyPacks": "MainMenu", }
 UNBACKABLE_SCREENS = ["CodeInput", "MainMenu", "Login", "EntryPoint"]
 
 
