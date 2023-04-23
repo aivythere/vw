@@ -2,20 +2,29 @@ from datetime import timedelta, datetime
 from kivy.metrics import dp, sp
 from kivy.uix.behaviors import ButtonBehavior
 from kivy.uix.image import Image
+from kivy.uix.screenmanager import NoTransition
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.card import MDCard
+from kivymd.uix.dialog import MDDialog
 from kivymd.uix.floatlayout import MDFloatLayout
 from kivymd.uix.gridlayout import MDGridLayout
 from kivymd.uix.label import MDLabel
+from kivymd.uix.slider import MDSlider
 from kivymd.uix.textfield import MDTextField
 import bfont
 import palette
 import appconf
-import cache_manager
+import animations
+import dt
 
-def change_screen(screen_manager, to_sc, ts_dir='left'):
-    screen_manager.transition = appconf.DEFAULT_TRANSITION
-    screen_manager.transition.direction = ts_dir
+
+def change_screen(screen_manager, to_sc, ts_dir='left', no_ts=False):
+    if not no_ts:
+        screen_manager.transition = appconf.DEFAULT_TRANSITION
+        screen_manager.transition.direction = ts_dir
+        screen_manager.current = to_sc
+        return
+    screen_manager.transition = NoTransition()
     screen_manager.current = to_sc
 
 
@@ -81,7 +90,7 @@ class ERRPopupFilling(MDBoxLayout):
     def __init__(self):
         super().__init__()
         self.size_hint_y = None
-        self.height = dp(150)
+        self.height = sp(150)
         self.md_bg_color = (0, 0, 0, 0)
         self.ErrorCard_instance = self.ErrorCard()
         err_image = Image(source="images/error.png", allow_stretch=True,
@@ -198,11 +207,12 @@ class Title(MDGridLayout):
         self.cols = 2
         self.spacing = 50
         self.goto = goto
-        back_button = ImageButton(img_path="images/back_button.png",
+        self.back_button = ImageButton(img_path="images/back_button.png",
                                   func=lambda *a: self.backToMainMenu(screen_manager), size_hint_x=.15)
-        self.add_widget(back_button)
+        self.add_widget(self.back_button)
 
     def backToMainMenu(self, screen_manager):
+        animations.backbutton_opacity().start(self.back_button)
         change_screen(screen_manager, self.goto, 'right')
 
 
@@ -223,8 +233,136 @@ class AccentCard(MDCard):
         if self.orf:
             self.orf(self.data)
 
+
+class ApproveBuyPopup(MDDialog):
+    def __init__(self, sum, per, pyo, prf, date, baf, **kwargs):
+        self.type = "custom"
+        self.content_cls = self.Contents(sum, per, pyo, prf, date, baf, self.dismiss)
+        self.opacity = 0
+        self.dismissable = True
+        super(ApproveBuyPopup, self).__init__(**kwargs)
+
+    def on_pre_open(self):
+        super(ApproveBuyPopup, self).on_pre_open()
+        animations.backbutton_opacity(0, 1, .1).start(self)
+
+    def dismiss(self, *_args, **kwargs):
+        if self.dismissable or kwargs.get('force_close'):
+            super(ApproveBuyPopup, self).dismiss()
+
+    class Contents(MDGridLayout):
+        def __init__(self, sum_raw, period_raw, payout_raw, profit_raw,
+                     date_cooked, buy_approve_func, dismiss_func, **kwargs):
+            super().__init__(**kwargs)
+            self.size_hint_y = None
+            self.height = sp(300)
+
+            self.rows = 3
+            self.md_bg_color = (0, 0, 0, 0)
+
+            checkmark_icon = Image(source='images/check.png', allow_stretch=True, size_hint_y=.3)
+            label = bfont.MSFont(text=f'Сумма: [font=fonts/MS_Bold]{sum_raw}[/font]\n'
+                                      # дней
+                                      f'Период: [font=fonts/MS_Bold]{period_raw} {"день" if int(period_raw) == 1 else "дней"}[/font]\n'
+                                      f'Сумма выплаты: [font=fonts/MS_Bold]{payout_raw}[/font]\n'
+                                      f'Прибыль: [font=fonts/MS_Bold]{profit_raw}[/font]\n'
+                                      f'Дата выплаты:\n [font=fonts/MS_Bold]~{date_cooked}[/font]', halign='center',
+                                 size="20sp")
+            #  < \n
+            btn_layout = MDGridLayout(cols=2, rows=1, spacing=30, size_hint_y=.3)
+            self.approve_button = MDCard(
+                bfont.MSFont(
+                    text='Подтвердить', halign='center',
+                    style="Bold", size="15sp", color=palette.black_rgba
+                ),
+                md_bg_color=palette.accent_yellow_rgba,
+                on_release = buy_approve_func,
+                ripple_behavior=True,
+                radius=40
+            )
+            self.decline_button = MDCard(
+                bfont.MSFont(
+                    text='Отменить', halign='center',
+                    style="Bold", size="15sp"
+                ),
+                md_bg_color=palette.blued_gray_main_rgba,
+                on_release = dismiss_func,
+                ripple_behavior=True,
+                radius=40
+            )
+
+            btn_layout.add_widget(self.decline_button)
+            btn_layout.add_widget(self.approve_button)
+
+            self.add_widget(checkmark_icon)
+            self.add_widget(label)
+            self.add_widget(btn_layout)
+
+class PackInfoPopup(MDDialog):
+    # pass
+    def __init__(self, od, os, cd, cs, **kwargs):
+        self.type = "custom"
+        self.content_cls = self.Contents(od, os, cd, cs, self.dismiss)
+        self.opacity = 0
+        self.dismissable = True
+        super(PackInfoPopup, self).__init__(**kwargs)
+
+    def on_pre_open(self):
+        super(PackInfoPopup, self).on_pre_open()
+        animations.backbutton_opacity(0, 1, .1).start(self)
+
+    def dismiss(self, *_args, **kwargs):
+        if self.dismissable or kwargs.get('force_close'):
+            super(PackInfoPopup, self).dismiss(force=True)
+
+    class Contents(MDGridLayout):
+        def __init__(self, open_date, open_sum_raw, close_date, close_sum_raw, dismiss_func, **kwargs):
+            super().__init__(**kwargs)
+            self.size_hint_y = None
+            self.height = sp(400)
+            self.rows = 3
+            self.md_bg_color = (0, 0, 0, 0)
+            self.spacing = 30
+
+            profit = close_sum_raw - open_sum_raw
+            daysleft = ((strtodt(close_date) - strtodt(open_date)).days)
+
+            self.add_widget(
+                bfont.MSFont(
+                    "Информация", halign='center', style='Bold',
+                    size_hint_y=.1
+                )
+            )
+
+            self.add_widget(
+                bfont.MSFont(
+                    f"Дата открытия: [font=fonts/MS_Bold]{open_date}[/font]\n"
+                    f"Сумма открытия: [font=fonts/MS_Bold]{dt.MoneyData(open_sum_raw).AM_TEXT}[/font]\n\n"
+                    f""
+                    f"Дата закрытия: [font=fonts/MS_Bold]{close_date}[/font]\n"
+                    f"Сумма закрытия: [font=fonts/MS_Bold]{dt.MoneyData(close_sum_raw).AM_TEXT}[/font]\n\n"
+                    f""
+                    f"Прибыль: [font=fonts/MS_Bold]{dt.MoneyData(profit).AM_TEXT}[/font]\n"
+                    f"До выплаты (дней): [font=fonts/MS_Bold]{daysleft}[/font]",
+                    size="20sp", size_hint_y=1.2
+                )
+            )
+
+            self.add_widget(
+                MDCard(
+                    bfont.MSFont(
+                        "Закрыть", style="Bold", halign="center", size="25sp"
+                    ),
+                    md_bg_color = palette.blued_gray_main_rgba,
+                    radius = appconf.CARD_RADIUS,
+                    on_release=dismiss_func,
+                    ripple_behavior=True,
+                    size_hint_y=.5
+                )
+            )
+
 def convert_time(days: int):
-    td = timedelta(days=days)
+    td = timedelta(days=int(days))
     ct = datetime.now()
     return datetime.strftime(td + ct, "%d.%m.%Y %H:%M MSK")
 
@@ -232,3 +370,24 @@ def convert_time(days: int):
 def dynamic_size(txl):
     return 25 if txl < 12 else 20 if txl < 14 else 17 if txl < 18 else 15
     # 20 if textlen > 9 else 15 if textlen > 12 else 25
+
+
+def cash(summ, perc, prof=False, wrap_in_dt=False):
+    if not prof:
+        res = round(((float(summ)*float(perc))/100)+float(summ), 2)
+        if not wrap_in_dt: return res
+        else: return dt.MoneyData(res).AM_TEXT
+    if not wrap_in_dt:
+        return round(((float(summ)*float(perc))/100)+float(summ)-summ, 2)
+    else: return dt.MoneyData(round(((float(summ)*float(perc))/100)+float(summ)-summ, 2)).AM_TEXT
+
+def dayordays(per):
+    if int(per) == 1:
+        return "день"
+    return "дней"
+
+def strtodt(_str: str):
+    _str = _str.replace(" MSK", "")
+    dt_object = datetime.strptime(_str, '%d.%m.%Y %H:%M')
+    return dt_object
+

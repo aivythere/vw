@@ -44,6 +44,8 @@ class EntryPoint(MDScreen):
 
     def on_leave(self, *args):
         self.Splash_instance.Load_animation.anim_loop = 1
+        # TODO !!!! Придумать с этим что-то !!!!
+        Clock.schedule_once(lambda *a: self.scr.remove_widget(self), 1)
 
     def is_db_init(self, *args):
         r = args[-1].replace('\n', '')

@@ -64,7 +64,7 @@ class PacksScreen(MDScreen):
 
     def create_dep_card(self, rdata: dict, *args):
         if not self.IS_INIT:
-            print('CardCreation')
+            self.title.text = "Вклады"
             self.grid.remove_widget(self.ph)
             for i in rdata.keys():
                 self.grid.add_widget(item := self.PackItem(onreleasefunc=self.pack_choose_handler, data=i))
@@ -79,7 +79,6 @@ class PacksScreen(MDScreen):
 
     def success_ps(self, *args):
         r = json.loads(args[-1])
-        self.title.text = "Вклады"
         Clock.schedule_once(lambda *a: self.create_dep_card(r), 0)
 
     def error_ps(self, *args):

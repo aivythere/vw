@@ -82,7 +82,7 @@ class CodeInputScreen(MDScreen):
         if self.REQUEST_ERR_COUNT >= appconf.REQUEST_ERR_COUNTOUT:
             NETWORK_ERR_POPUP = MDDialog(type="custom", content_cls=elements.ERRPopupFilling())
             NETWORK_ERR_POPUP.open()
-            self.continue_button.disabled = False
+            self.SubmitCode_instance.disabled = False
         else:
             Clock.schedule_once(lambda *a: UrlRequest(url=appconf.SERVER_DOMAIN,
                                                   req_body=json.dumps(
@@ -93,6 +93,7 @@ class CodeInputScreen(MDScreen):
 
     def submitCode(self, *args):
         self.CODE = self.code_input.text_field.text
+        self.SubmitCode_instance.disabled = True
         Clock.schedule_once(lambda *a: UrlRequest(url=appconf.SERVER_DOMAIN,
                                                   req_body=json.dumps(
                                                       {"method": "SUBMIT_OTP", "email": self.EMAIL, "otp": self.CODE}),

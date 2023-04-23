@@ -1,3 +1,8 @@
+import json
+
+import certifi
+from kivy.clock import Clock
+from kivy.network.urlrequest import UrlRequest
 from kivymd.app import MDApp
 from kivymd.uix.screenmanager import MDScreenManager
 from kivy.core.window import Window
@@ -10,10 +15,12 @@ import entrypoint
 import deposit_screen
 import cache_manager
 import packs_screen
+import my_packs_screen
 from kivy.utils import platform
 from kivy.base import EventLoop
 import elements
 from kivymd.utils.set_bars_colors import set_bars_colors
+import palette
 
 
 # class KindaScreenManager(MDScreenManager):
@@ -52,6 +59,7 @@ class PassiveIncomeApp(MDApp):
         self.MainMenuScreen = mainmenu_screen.MainMenuScreen(self.ScreenManager)
         self.DepositScreen = deposit_screen.DepositScreen(self.ScreenManager)
         self.PacksScreen = packs_screen.PacksScreen(self.ScreenManager)
+        self.MyPacksScreen = my_packs_screen.MyPacksScreen(self.ScreenManager)
 
         self.ScreenManager.add_widget(self.ENTRYPOINT)
         self.ScreenManager.add_widget(self.LoginScreen)
@@ -60,6 +68,7 @@ class PassiveIncomeApp(MDApp):
         self.ScreenManager.add_widget(self.ProfitCalculator)
         self.ScreenManager.add_widget(self.MainMenuScreen)
         self.ScreenManager.add_widget(self.PacksScreen)
+        self.ScreenManager.add_widget(self.MyPacksScreen)
 
         cache_manager.Cache.append('Genesis', 'func_depscreen', self.DepositScreen.reload)
 
@@ -73,12 +82,26 @@ class PassiveIncomeApp(MDApp):
 
     def on_start(self):
         EventLoop.window.bind(on_keyboard=self.hook_keyboard)
+        Clock.schedule_once(self.hookPacks, 0)
+
+    def hookPacks(self, *args):
+
+        def success_pscc(*args):
+            r = json.loads(args[-1])
+            self.PacksScreen.create_dep_card(rdata=r)
+
+        UrlRequest(url=appconf.SERVER_DOMAIN,
+                   req_body=json.dumps({'method': 'DEPS_lookup'}),
+                   on_success=success_pscc,
+                   timeout=appconf.REQUEST_TIMEOUT,
+                   ca_file=certifi.where())
+
 
     def status_bar_colors(self):
         set_bars_colors(
-            self.theme_cls.primary_color,  # status bar color
-            self.theme_cls.primary_color,  # navigation bar color
-            "Dark",  # icons color of status bar
+            palette.white_rgba if appconf.APP_THEME == "Dark" else palette.black_rgba,
+            palette.white_rgba if appconf.APP_THEME == "Dark" else palette.black_rgba,
+            "Light" if appconf.APP_THEME == "Dark" else "Light",
         )
 
     def hook_keyboard(self, window, key, *largs):

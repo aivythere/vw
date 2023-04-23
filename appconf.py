@@ -17,7 +17,7 @@ UNBACKABLE_SCREENS = ["CodeInput", "MainMenu", "Login", "EntryPoint"]
 
 
 # USER_SIDE
-SERVER_DOMAIN = 'http://localhost:8000'
+SERVER_DOMAIN = 'http://localhost:8000/'
 LOCAL_DB_FILENAME = 'local.db'
 REQUEST_ERR_COUNTOUT = 10
 REQUEST_TIMEOUT = 10
