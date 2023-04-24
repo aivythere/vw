@@ -46,7 +46,8 @@ class DepositScreen(MDScreen):
             disabled=True,
         )
         self.slider.bind(value=self.onSlider)
-        self.sum_textfield = elements.BetterMoneyTextInput(on_text_change=self.onTextFieldTextChange, size_hint_y=.7)
+        self.sum_textfield = elements.BetterMoneyTextInput(on_text_change=self.onTextFieldTextChange, size_hint_y=.7,
+                                                            placeholder="Сумма вклада")
         self.sum_textfield.disabled = True
         self.ProfitCard_instance = self.ProfitCard()
         self.OpenDepositButton_instance = self.OpenDepositButton(self.openDeposit)

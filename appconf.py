@@ -22,7 +22,7 @@ LOCAL_DB_FILENAME = 'local.db'
 REQUEST_ERR_COUNTOUT = 10
 REQUEST_TIMEOUT = 10
 REQUEST_RETRY_INTERVAL = 0
-PLACEHOLDER_LIST = ['Имя', 'E-mail', 'Телефон', 'Код']
+PLACEHOLDER_LIST = ['Имя', 'E-mail', 'Телефон', 'Код', 'Сумма вклада']
 DOMAIN = 'nodomain.com' #  'prettycloneisnt.com'
 DB_CREATION_QUERY = """
 CREATE TABLE "data" (

@@ -1,4 +1,7 @@
 from datetime import timedelta, datetime
+
+from kivy.graphics import *
+from kivy.lang import Builder
 from kivy.metrics import dp, sp
 from kivy.uix.behaviors import ButtonBehavior
 from kivy.uix.image import Image
@@ -42,13 +45,15 @@ class TextCard(MDCard):
 
 
 class BetterMoneyTextInput(MDCard):
-    def __init__(self, on_text_change, **kwargs):
+    def __init__(self, on_text_change, placeholder='', **kwargs):
         super(BetterMoneyTextInput, self).__init__(**kwargs)
         self.md_bg_color = palette.blued_gray_main_rgba
         self.padding = 20
         self.radius = 40
+        self.placeholder_text = placeholder
+
         grid = MDGridLayout(cols=2)
-        input_text_card = MDCard(
+        self.input_text_card = MDCard(
             md_bg_color=(1, 1, 1, 1),
             radius=50,
             padding=[0, 0, 0, 20],
@@ -67,22 +72,41 @@ class BetterMoneyTextInput(MDCard):
             size_hint_x=.7,
             cursor_color=(1, 1, 1, 1),
             input_filter='int',
-            input_type='number'
+            input_type='number',
+            text=placeholder
         )
         opg.add_widget(self.text_field)
-        input_text_card.add_widget(opg)
+        self.clear_btn = ImageButton('images/clear.png', func=self.clear_text, pos_hint={'center_x': .9, 'center_y': .35},
+                        size_hint_x=.1, allow_stretch=True)
+        opg.add_widget(
+            self.clear_btn
+        )
+        self.input_text_card.add_widget(opg)
         self.text_field.bind(
-            text=on_text_change
+            text=on_text_change,
+            focus=self.is_placeholder
         )
 
-        grid.add_widget(input_text_card)
+        grid.add_widget(self.input_text_card)
         grid.add_widget(
-                bfont.MSFont(
+            bfont.MSFont(
                 text="₽", style='Bold', size='40sp', halign='center', valign='center',
                 size_hint_x=.1, text_color=(0, 0, 0, 1), theme_text_color="Custom"
             )
         )
         self.add_widget(grid)
+
+    def is_placeholder(self, *args):
+        if args[-1]:
+            if self.text_field.text in appconf.PLACEHOLDER_LIST:
+                self.text_field.text = ''
+        elif self.text_field.text == '':
+            self.text_field.text = self.placeholder_text
+
+    def clear_text(self, *args):
+        if self.text_field.text not in appconf.PLACEHOLDER_LIST:
+            animations.backbutton_opacity(dur=.1).start(self.clear_btn)
+            self.text_field.text = ''
 
 
 class BetterTextInput(MDCard):
@@ -95,7 +119,7 @@ class BetterTextInput(MDCard):
         self.size_hint_y = .3
         self.placeholder_text = placeholder
         grid = MDGridLayout(cols=2, spacing=30)
-        input_text_card = MDCard(
+        self.input_text_card = MDCard(
             md_bg_color=(1, 1, 1, 1),
             radius=50,
             padding=[0, 0, 0, 20],
@@ -116,13 +140,14 @@ class BetterTextInput(MDCard):
         )
         if input_filter: self.text_field.input_filter = input_filter
         opg.add_widget(self.text_field)
-        input_text_card.add_widget(opg)
+
+        self.input_text_card.add_widget(opg)
         self.text_field.bind(
             text=on_text_change,
             focus=self.is_placeholder
         )
 
-        grid.add_widget(input_text_card)
+        grid.add_widget(self.input_text_card)
         grid.add_widget(
             Image(source=f'images/{pic_filename}', size_hint=[.07, .07], allow_stretch=True)
         )
@@ -134,6 +159,7 @@ class BetterTextInput(MDCard):
                 self.text_field.text = ''
         elif self.text_field.text == '':
             self.text_field.text = self.placeholder_text
+
 
 
 class IconCard(MDCard):
@@ -157,7 +183,9 @@ class IconCard(MDCard):
     def on_release(self):
         if self.on_release_func and self.data:
             self.on_release_func(self.data)
-        else: self.on_release_func()
+        else:
+            self.on_release_func()
+
 
 class ImageButton(ButtonBehavior, Image):
     def __init__(self, img_path, data=None, func=None, **kwargs):
@@ -172,6 +200,7 @@ class ImageButton(ButtonBehavior, Image):
         else:
             self.on_release_func()
 
+
 class Title(MDGridLayout):
     def __init__(self, screen_manager, goto='MainMenu', **kwargs):
         super(Title, self).__init__(**kwargs)
@@ -179,7 +208,7 @@ class Title(MDGridLayout):
         self.spacing = 50
         self.goto = goto
         self.back_button = ImageButton(img_path="images/back_button.png",
-                                  func=lambda *a: self.backToMainMenu(screen_manager), size_hint_x=.15)
+                                       func=lambda *a: self.backToMainMenu(screen_manager), size_hint_x=.15)
         self.add_widget(self.back_button)
 
     def backToMainMenu(self, screen_manager):
@@ -188,7 +217,8 @@ class Title(MDGridLayout):
 
 
 class AccentCard(MDCard):
-    def __init__(self, text='', data=None, func=None, color=palette.accent_yellow_rgba, radius=20, text_size='12sp', **kwargs):
+    def __init__(self, text='', data=None, func=None, color=palette.accent_yellow_rgba, radius=20, text_size='12sp',
+                 **kwargs):
         super(AccentCard, self).__init__(**kwargs)
         grid = MDGridLayout(cols=1)
         self.radius = radius
@@ -240,7 +270,7 @@ class ApproveBuyPopup(MDDialog):
 
             checkmark_icon = Image(source='images/check.png', allow_stretch=True, size_hint_y=.3)
             label = bfont.MSFont(text=f'Сумма: [font=fonts/MS_Bold]{sum_raw}[/font]\n'
-                                      # дней
+            # дней
                                       f'Период: [font=fonts/MS_Bold]{period_raw} {"день" if int(period_raw) == 1 else "дней"}[/font]\n'
                                       f'Сумма выплаты: [font=fonts/MS_Bold]{payout_raw}[/font]\n'
                                       f'Прибыль: [font=fonts/MS_Bold]{profit_raw}[/font]\n'
@@ -254,7 +284,7 @@ class ApproveBuyPopup(MDDialog):
                     style="Bold", size="15sp", color=palette.black_rgba
                 ),
                 md_bg_color=palette.accent_yellow_rgba,
-                on_release = buy_approve_func,
+                on_release=buy_approve_func,
                 ripple_behavior=True,
                 radius=40
             )
@@ -264,7 +294,7 @@ class ApproveBuyPopup(MDDialog):
                     style="Bold", size="15sp"
                 ),
                 md_bg_color=palette.blued_gray_main_rgba,
-                on_release = dismiss_func,
+                on_release=dismiss_func,
                 ripple_behavior=True,
                 radius=40
             )
@@ -340,8 +370,8 @@ class PackInfoPopup(MDDialog):
                     bfont.MSFont(
                         "Закрыть", style="Bold", halign="center", size="25sp"
                     ),
-                    md_bg_color = palette.blued_gray_main_rgba,
-                    radius = appconf.CARD_RADIUS,
+                    md_bg_color=palette.blued_gray_main_rgba,
+                    radius=appconf.CARD_RADIUS,
                     on_release=dismiss_func,
                     ripple_behavior=True,
                     size_hint_y=.5
@@ -406,20 +436,27 @@ def dynamic_size(txl):
 
 def cash(summ, perc, prof=False, wrap_in_dt=False):
     if not prof:
-        res = round(((float(summ)*float(perc))/100)+float(summ), 2)
-        if not wrap_in_dt: return res
-        else: return dt.MoneyData(res).AM_TEXT
+        res = round(((float(summ) * float(perc)) / 100) + float(summ), 2)
+        if not wrap_in_dt:
+            return res
+        else:
+            return dt.MoneyData(res).AM_TEXT
     if not wrap_in_dt:
-        return round(((float(summ)*float(perc))/100)+float(summ)-summ, 2)
-    else: return dt.MoneyData(round(((float(summ)*float(perc))/100)+float(summ)-summ, 2)).AM_TEXT
+        return round(((float(summ) * float(perc)) / 100) + float(summ) - summ, 2)
+    else:
+        return dt.MoneyData(round(((float(summ) * float(perc)) / 100) + float(summ) - summ, 2)).AM_TEXT
+
 
 def dayordays(per):
     if int(per) == 1:
         return "день"
     return "дней"
 
+
 def strtodt(_str: str):
     _str = _str.replace(" MSK", "")
     dt_object = datetime.strptime(_str, '%d.%m.%Y %H:%M')
     return dt_object
 
+def around(obj_pos, touch_x, touch_y):
+    if touch_x: ...

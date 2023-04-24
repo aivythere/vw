@@ -32,7 +32,7 @@ class ProfitCalculatorScreen(MDScreen):
         self.min_dep_amount_label = bfont.MSFont('от 100 ₽ до 50 000 000 ₽', size='15sp',
                                                  size_hint_y=0.1, halign='center', valign='center')
         self.deposit_amount_input = elements.BetterMoneyTextInput(
-            on_text_change=self.onTextFieldTextChange, size_hint_y=.7
+            on_text_change=self.onTextFieldTextChange, size_hint_y=.7, placeholder="Сумма вклада"
         )
         self.deposit_amount_input.disabled = True
         # separator

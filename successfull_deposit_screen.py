@@ -17,7 +17,7 @@ class CongratzScreen(MDScreen):
         self.name = "Congratz"
         self.scr = screen_manager
 
-        main_grid = MDGridLayout(cols=1, spacing=50, padding=[150, 400, 150, 400])
+        main_grid = MDGridLayout(cols=1, spacing=50, padding=[150, 400, 150, 500])
         self.pic = Image(source='images/congratz.png', allow_stretch=True)
         congratz_text = bfont.MSFont("Поздравляем!\nВклад открыт", style='Bold', halign='center')
 
