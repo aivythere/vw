@@ -76,7 +76,7 @@ class BetterMoneyTextInput(MDCard):
             text=placeholder
         )
         opg.add_widget(self.text_field)
-        self.clear_btn = ImageButton('images/clear.png', func=self.clear_text, pos_hint={'center_x': .9, 'center_y': .35},
+        self.clear_btn = ImageButton('images/clear.png', func=self.clear_text, pos_hint={'center_x': .9, 'center_y': .5},
                         size_hint_x=.1, allow_stretch=True)
         opg.add_widget(
             self.clear_btn
